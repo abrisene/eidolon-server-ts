@@ -6,7 +6,7 @@
 /**
  * Module Dependencies
  */
-
+const os = require('os');
 const eidolon = require('../lib');
 
 /**
@@ -15,8 +15,10 @@ const eidolon = require('../lib');
 
 const main = async () => {
   try {
-    console.log('xx');
-    await eidolon.init();
+    const e = await eidolon.init();
+    const { server } = e;
+    console.log(server.status);
+    // console.log(os.hostname());
   } catch (err) {
     console.error(err);
   }

@@ -7,40 +7,14 @@
  * Module Dependencies
  */
 
+import Configs from './configs';
 import Server from './Server';
-// const config = require('./configs');
-// const server = require('./server');
-
-// const constants = require('./constants');
-// const models = require('./models');
-
-// const modules = require('./modules');
-
-/**
- * Main
- */
-
-/* const init = async (useServer = true) => {
-  try {
-    await config.init();
-    if (useServer) await server();
-
-    return {
-      config,
-      constants,
-      models,
-      modules,
-    };
-  } catch (err) {
-    console.error(err);
-    return { err };
-  }
-}; */
 
 async function init(useServer = true): Promise<object> {
-  console.log('xxx');
   const server = useServer ? new Server() : undefined;
+  await Configs.init();
   if (server) await server.serve(9000);
+  console.log(Configs);
   return {
     server,
   };
