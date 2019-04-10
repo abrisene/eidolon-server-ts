@@ -12,6 +12,7 @@ import EventEmitter from 'events';
 import utilities from '../utilities';
 
 import configMongoDB from './config.db.mongodb';
+import configRedis from './config.db.redis';
 
 dotenv.config();
 const { jsonTryParse } = utilities;
@@ -38,7 +39,7 @@ interface IConfig {
 
 const configMap = {
   mongodb: './config.db.mongodb',
-  // redis: './config.db.redis',
+  redis: './config.db.redis',
   // sql: './config.db.sql',
   // mailgun: './config.mail.mailgun',
   // twilio: './config.sms.twilio',
@@ -93,6 +94,7 @@ class Config extends EventEmitter {
 
   public async init() {
     await configMongoDB();
+    await configRedis();
     this.emit('initialized');
     return true;
   }

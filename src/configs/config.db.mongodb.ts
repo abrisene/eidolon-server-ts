@@ -1,6 +1,6 @@
 /*
- * config.db.mongodb.ts
- * MongoDB Configuration
+ * config.db.redis.ts
+ * Redis Configuration
  */
 
 /**
@@ -18,22 +18,6 @@ dotenv.config();
 const { jsonTryParse, exists } = utilities;
 
 /*
- * Interfaces
- */
-
-/* interface IKeyStore {
-  [propName: string]: string | number;
-}
-
-interface IConfigStore {
-  [propName: string]: IConfig;
-}
-
-interface IConfig {
-  [propName: string]: any;
-} */
-
-/*
  * Constants
  */
 
@@ -49,6 +33,7 @@ export default async function configure() {
   if (!url) return undefined;
 
   const client = mongoose.connection;
+
   client.on('error', (err) => {
     Configs.emit('mongodb error', (err));
     console.error(chalk.red.bold('Could not connect to MongoDB'));
