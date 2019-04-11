@@ -12,6 +12,7 @@ import EventEmitter from 'events';
 import utilities from '../utilities';
 
 import configMongoDB from './config.db.mongodb';
+import configNeo4j from './config.db.neo4j';
 import configRedis from './config.db.redis';
 
 dotenv.config();
@@ -39,6 +40,7 @@ interface IConfig {
 
 const configMap = {
   mongodb: './config.db.mongodb',
+  neo4j: './config.db.neo4j',
   redis: './config.db.redis',
   // sql: './config.db.sql',
   // mailgun: './config.mail.mailgun',
@@ -94,6 +96,7 @@ class Config extends EventEmitter {
 
   public async init() {
     await configMongoDB();
+    await configNeo4j();
     await configRedis();
     this.emit('initialized');
     return true;

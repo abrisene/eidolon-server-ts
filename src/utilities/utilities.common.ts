@@ -4,6 +4,14 @@
  */
 
 /**
+ * Interfaces
+ */
+
+interface IEnvConfig {
+  [propName: string]: string;
+}
+
+/**
  * Module Exports
  */
 
@@ -27,7 +35,7 @@ export function exists(items?: string|any[]): boolean {
  * @param  {string} string  String to be parsed.
  * @return {object}         Returns JSON or undefined
  */
-export function jsonTryParse(string: string): object|undefined {
+export function jsonTryParse(string: string): IEnvConfig|undefined {
   try {
     const json = JSON.parse(string);
     return json;
