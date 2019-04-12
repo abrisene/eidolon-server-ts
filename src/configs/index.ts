@@ -18,10 +18,14 @@ import configRedis from './config.db.redis';
 
 import configMailgun from './config.mail.mailgun';
 
+import configStripe from './config.payment.stripe';
+
 import configAbly from './config.pubsub.ably';
 import configPubNub from './config.pubsub.pubnub';
 
 import configTwilio from './config.sms.twilio';
+
+import configAirtable from './config.spreadsheet.airtable';
 
 dotenv.config();
 const { jsonTryParse } = utilities;
@@ -53,13 +57,13 @@ const configMap = {
   redis: './config.db.redis',
   // sql: './config.db.sql',
   mailgun: './config.mail.mailgun',
-  // stripe: './config.payment.stripe',
+  stripe: './config.payment.stripe',
   ably: './config.pubsub.ably',
   pubnub: './config.pubsub.pubnub',
   twilio: './config.sms.twilio',
   // google: './config.social.google',
   // facebook: './config.social.facebook',
-  // airtable: './config.spreadsheet.airtable',
+  airtable: './config.spreadsheet.airtable',
 };
 
 /*
@@ -107,9 +111,11 @@ class Config extends EventEmitter {
     await configNeo4j();
     await configRedis();
     await configMailgun();
+    await configStripe();
     await configAbly();
     await configPubNub();
     await configTwilio();
+    await configAirtable();
     this._status = 'initialized';
     this.emit('initialized');
     return true;

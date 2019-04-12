@@ -44,6 +44,7 @@ export default async function configure() {
     Configs.emit('mailgun initialized');
     console.log(chalk.green.bold('>> Mailgun Initialized <<'));
     Configs.addConfig(key, config);
+    Configs.setPublicKey(key, publicKey);
     return config;
   } catch (err) {
     console.error(err);

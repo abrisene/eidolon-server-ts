@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "ably": "1.1.7",
+    "airtable": "0.5.10",
     "chalk": "2.4.2",
     "dotenv": "7.0.0",
     "express": "4.16.4",
@@ -30,6 +31,7 @@
     "neo4j-driver": "1.7.3",
     "pubnub": "4.23.0",
     "sequelize": "5.3.1",
+    "stripe": "6.28.0",
     "twilio": "3.30.0"
   },
   "devDependencies": {
@@ -41,6 +43,7 @@
     "@types/mongoose": "5.3.25",
     "@types/pubnub": "4.0.6",
     "@types/sequelize": "4.27.46",
+    "@types/stripe": "6.25.10",
     "@types/twilio": "0.0.10",
     "@types/validator": "10.11.0",
     "concurrently": "4.1.0",
