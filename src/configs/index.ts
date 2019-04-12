@@ -14,6 +14,14 @@ import utilities from '../utilities';
 import configMongoDB from './config.db.mongodb';
 import configNeo4j from './config.db.neo4j';
 import configRedis from './config.db.redis';
+// import configSql from './config.db.sql';
+
+import configMailgun from './config.mail.mailgun';
+
+import configAbly from './config.pubsub.ably';
+import configPubNub from './config.pubsub.pubnub';
+
+import configTwilio from './config.sms.twilio';
 
 dotenv.config();
 const { jsonTryParse } = utilities;
@@ -39,19 +47,19 @@ interface IConfig {
  */
 
 const configMap = {
+  // jwt: './config.auth.jwt',
   mongodb: './config.db.mongodb',
   neo4j: './config.db.neo4j',
   redis: './config.db.redis',
   // sql: './config.db.sql',
-  // mailgun: './config.mail.mailgun',
-  // twilio: './config.sms.twilio',
-  // pubnub: './config.pubsub.pubnub',
-  // ably: './config.pubsub.ably',
+  mailgun: './config.mail.mailgun',
   // stripe: './config.payment.stripe',
-  // airtable: './config.spreadsheet.airtable',
-  // jwt: './config.auth.jwt',
+  ably: './config.pubsub.ably',
+  pubnub: './config.pubsub.pubnub',
+  twilio: './config.sms.twilio',
   // google: './config.social.google',
   // facebook: './config.social.facebook',
+  // airtable: './config.spreadsheet.airtable',
 };
 
 /*
@@ -98,6 +106,11 @@ class Config extends EventEmitter {
     await configMongoDB();
     await configNeo4j();
     await configRedis();
+    await configMailgun();
+    await configAbly();
+    await configPubNub();
+    await configTwilio();
+    this._status = 'initialized';
     this.emit('initialized');
     return true;
   }

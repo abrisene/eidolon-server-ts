@@ -16,14 +16,16 @@ interface IEnvConfig {
  */
 
 /**
- * Checks whether an array of items have any non-undefined or empty values.
- * @param  {array} items An array of items.
- * @return {bool}        Returns true or false
+ * Checks whether a string or array of items have any non-undefined or empty values.
+ * @param  {array}   items An array of items.
+ * @param  {boolean} all   Whether or not all items need to be present.
+ * @return {bool}          Returns true or false
  */
-export function exists(items?: string|any[]): boolean {
+export function exists(items?: string|any[], all = false): boolean {
   let result;
   if (Array.isArray(items)) {
-    result = items.some((i: any) => i !== undefined && i !== '');
+    if (!all) result = items.some((i: any) => i !== undefined && i !== '');
+    if (all) result = items.reduce((a: boolean, b: any) => a && b !== undefined && b !== '');
   } else {
     result = items !== undefined && items !== '';
   }

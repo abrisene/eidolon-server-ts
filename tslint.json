@@ -10,7 +10,15 @@
     "variable-name": [true, "check-format", "allow-leading-underscore"],
     "no-console": {
       "severity": "warning"
-    }
+    },
+    "object-literal-sort-keys": [false, "match-declaration-order"],
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "any",
+        "named-imports-order": "lowercase-first"
+      }
+    ]
   },
   "rulesDirectory": [],
   "compilerOptions": {
