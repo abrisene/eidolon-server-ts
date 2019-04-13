@@ -33,18 +33,17 @@ const category = 'spreadsheet';
  */
 
 export default async function configure() {
-  const envConfig = jsonTryParse(process.env.STRIPE);
+  const envConfig = jsonTryParse(process.env.AIRTABLE);
   if (!envConfig) return undefined;
   if (!exists([envConfig.secretKey], true)) return undefined;
-  const { secretKey, publicKey } = envConfig;
+  const { secretKey } = envConfig;
 
   try {
     const client = new Airtable({ apiKey: secretKey });
-    const config = { secretKey, publicKey, client };
+    const config = { secretKey, client };
     Configs.emit('airtable initialized');
     console.log(chalk.green.bold('>> Airtable Initialized <<'));
     Configs.addConfig(key, config);
-    Configs.setPublicKey(key, publicKey);
     return config;
   } catch (err) {
     console.error(err);

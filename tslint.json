@@ -5,9 +5,9 @@
   ],
   "jsRules": {},
   "rules": {
-    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+    "arrow-parens": false,
     "curly": [true, "ignore-same-line"],
-    "variable-name": [true, "check-format", "allow-leading-underscore"],
+    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
     "no-console": {
       "severity": "warning"
     },
@@ -18,7 +18,8 @@
         "import-sources-order": "any",
         "named-imports-order": "lowercase-first"
       }
-    ]
+    ],
+    "variable-name": [true, "check-format", "allow-leading-underscore"]
   },
   "rulesDirectory": [],
   "compilerOptions": {

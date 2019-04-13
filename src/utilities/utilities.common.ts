@@ -16,6 +16,17 @@ interface IEnvConfig {
  */
 
 /**
+ * Iterates forEach on an array asynchronously.
+ * @param  {array}    array     An array to be iterated over.
+ * @param  {function} callback  The operation to be performed on each item of the array.
+ */
+export async function asyncForEach(array: any[], callback: (item: any, index: number, array: any[]) => void) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
+/**
  * Checks whether a string or array of items have any non-undefined or empty values.
  * @param  {array}   items An array of items.
  * @param  {boolean} all   Whether or not all items need to be present.

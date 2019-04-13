@@ -9,26 +9,11 @@
 
 import dotenv from 'dotenv';
 import EventEmitter from 'events';
+import fs from 'fs';
 import utilities from '../utilities';
 
-import configMongoDB from './config.db.mongodb';
-import configNeo4j from './config.db.neo4j';
-import configRedis from './config.db.redis';
-// import configSql from './config.db.sql';
-
-import configMailgun from './config.mail.mailgun';
-
-import configStripe from './config.payment.stripe';
-
-import configAbly from './config.pubsub.ably';
-import configPubNub from './config.pubsub.pubnub';
-
-import configTwilio from './config.sms.twilio';
-
-import configAirtable from './config.spreadsheet.airtable';
-
 dotenv.config();
-const { jsonTryParse } = utilities;
+const { asyncForEach, jsonTryParse } = utilities;
 
 /*
  * Interfaces
@@ -50,6 +35,7 @@ interface IConfig {
  * Constants
  */
 
+// This is not currently used for anything.
 const configMap = {
   // jwt: './config.auth.jwt',
   mongodb: './config.db.mongodb',
@@ -107,15 +93,12 @@ class Config extends EventEmitter {
   }
 
   public async init() {
-    await configMongoDB();
-    await configNeo4j();
-    await configRedis();
-    await configMailgun();
-    await configStripe();
-    await configAbly();
-    await configPubNub();
-    await configTwilio();
-    await configAirtable();
+    const configs = fs.readdirSync(__dirname).filter(i => i.match(/^config.*.js$/));
+    await asyncForEach(configs, async (loc) => {
+      const init = await import(`./${loc}`);
+      await init.default();
+    });
+
     this._status = 'initialized';
     this.emit('initialized');
     return true;
