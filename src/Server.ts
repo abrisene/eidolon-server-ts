@@ -11,11 +11,13 @@ import EventEmitter from 'events';
 import express from 'express';
 import Configs from './configs';
 
+import routes from './routes';
+
 /*
  * Module Exports
  */
 
-export default class Server extends EventEmitter {
+export default class EidolonServer extends EventEmitter {
   public app: express.Application;
   protected _status: string;
   constructor() {
@@ -32,6 +34,7 @@ export default class Server extends EventEmitter {
   } */
 
   public async serve(port: number) {
+    await routes(this);
     this.app.listen(port, () => {
       console.log(`> Server Listening on ${port}`);
       this._status = 'serving';

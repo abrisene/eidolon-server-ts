@@ -74,7 +74,7 @@ class Config extends EventEmitter {
         env: process.env.NODE_ENV || 'production',
       },
       server : {
-        corsUrls: jsonTryParse(process.env.CORS_URLS),
+        corsUrls: jsonTryParse(process.env.CORS_URLS), // TODO: Need to properly configure CORS
         port: process.env.PORT || 8000,
       },
     };
@@ -104,7 +104,7 @@ class Config extends EventEmitter {
     return true;
   }
 
-  public getPublicKey(key: string): string | number | undefined {
+  public getPublicKey(key: string): string | number {
     return this._publicKeys[key];
   }
 
@@ -112,7 +112,7 @@ class Config extends EventEmitter {
     this._publicKeys[key] = value;
   }
 
-  public getPrivateKey(key: string): string | number | undefined {
+  public getPrivateKey(key: string): string | number {
     return this._privateKeys[key];
   }
 
