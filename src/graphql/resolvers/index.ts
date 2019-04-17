@@ -9,14 +9,30 @@ import { IResolvers } from 'graphql-tools';
  * Module Dependencies
  */
 
-// const configResolvers = require('./resolvers.config');
-// const userResolvers = require('./resolvers.user');
-// const paymentResolvers = require('./resolvers.payment');
-// const messageResolvers = require('./resolvers.message');
+import utilities from '../../utilities';
+const { importPattern } = utilities;
+
+/*
+ * Interfaces
+ */
+
+interface IResolverImport {
+  default: IResolvers;
+}
 
 /*
  * Module Exports
  */
 
-const resolvers: IResolvers = {};
-export default resolvers;
+export async function importResolvers(location = __dirname): Promise<IResolvers> {
+  let resolvers: IResolvers = { Query: {}, Mutation: {} };
+  await importPattern(/^(resolvers).*.js$/, async (resolver: IResolverImport) => {
+    const { Query, Mutation, ...rest } = resolver.default;
+    resolvers = {
+      Query: { ...resolvers.Query, ...Query },
+      Mutation: { ...resolvers.Mutation, ...Mutation },
+      ...rest,
+    } as IResolvers;
+  }, location);
+  return resolvers;
+}

@@ -7,11 +7,31 @@
  * Module Dependencies
  */
 
-import s from './schema';
-import r from './resolvers';
+import path from 'path';
+import { DocumentNode } from 'graphql';
+import { IResolvers } from 'graphql-tools';
+
+import { importSchemas as iS } from './schema';
+import { importResolvers as iR } from './resolvers';
+
 /*
- * Resolvers
+ * Interfaces
  */
 
-export const schema = s;
-export const resolvers = r;
+interface IGraphQLConfig {
+  schema: DocumentNode[];
+  resolvers: IResolvers;
+}
+
+/*
+ * Module Exports
+ */
+
+export async function importConfig(): Promise<IGraphQLConfig> {
+  const schema = await iS(path.join(__dirname, './schema'), true);
+  const resolvers = await iR();
+  return { schema, resolvers };
+}
+
+export const importSchemas = iS;
+export const importResolvers = iR;

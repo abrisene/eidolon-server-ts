@@ -73,9 +73,13 @@ class Config extends EventEmitter {
         appName: process.env.APP_NAME || '',
         env: process.env.NODE_ENV || 'production',
       },
-      server : {
+      server: {
         corsUrls: jsonTryParse(process.env.CORS_URLS), // TODO: Need to properly configure CORS
         port: process.env.PORT || 8000,
+      },
+      uris: {
+        host: process.env.SERVER_URL,
+        client: process.env.CLIENT_URL,
       },
     };
   }

@@ -57,13 +57,14 @@ function connectAbly(serverKey: string): Promise<Ably.Realtime> {
 export default async function configure() {
   const envConfig = jsonTryParse(process.env.ABLY);
   if (!envConfig) return undefined;
-  if (!exists([envConfig.serverKey, envConfig.clientKey], true)) return undefined;
-  const { serverKey, clientKey } = envConfig;
+  if (!exists([envConfig.secretKey, envConfig.publicKey], true)) return undefined;
+  const { secretKey, publicKey } = envConfig;
 
   try {
-    const client = await connectAbly(serverKey);
-    const config = { serverKey, clientKey, client };
+    const client = await connectAbly(secretKey);
+    const config = { secretKey, publicKey, client };
     Configs.addConfig(key, config);
+    Configs.setPublicKey(key, publicKey);
     return config;
   } catch (err) {
     console.error(err);

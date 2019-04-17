@@ -7,14 +7,25 @@
  * Module Dependencies
  */
 
+import { DocumentNode } from 'graphql';
 import { gql } from 'apollo-server-express';
-// const configSchema = require('./schema.config');
-// const userSchema = require('./schema.user');
-// const paymentSchema = require('./schema.payment');
-// const messageSchema = require('./schema.message');
+import utilities from '../../utilities';
+const { importPattern } = utilities;
 
 /*
- * Resolvers
+ * Utility Methods
+ */
+
+/*
+ * Interfaces
+ */
+
+interface ISchemaImport {
+  default: DocumentNode;
+}
+
+/*
+ * Default Schema
  */
 
 const linkSchema = gql`
@@ -35,10 +46,16 @@ const linkSchema = gql`
  * Module Exports
  */
 
+export async function importSchemas(location = __dirname, init = false): Promise<DocumentNode[]> {
+  const schemas: DocumentNode[] = [];
+  await importPattern(/^(schema|scalar).*.js$/, async (schema: ISchemaImport) => {
+    schemas.push(schema.default);
+    return;
+  }, location);
+  const result = !init ? schemas : [linkSchema, ...schemas];
+  return result;
+}
+
 export default [
   linkSchema,
-  // configSchema,
-  // userSchema,
-  // paymentSchema,
-  // messageSchema,
 ];
