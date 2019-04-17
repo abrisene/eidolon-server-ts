@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'mailgun';
-const category = 'mail';
+export const key = 'mailgun';
+export const category = 'mail';
 
 /*
  * Utility Methods
@@ -43,7 +43,7 @@ export default async function configure() {
     const config = { secretKey, publicKey, domain, client };
     Configs.emit('mailgun initialized');
     console.log(chalk.green.bold('>> Mailgun Initialized <<'));
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     Configs.setPublicKey(key, publicKey);
     return config;
   } catch (err) {

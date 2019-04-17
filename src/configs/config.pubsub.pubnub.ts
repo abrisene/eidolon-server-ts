@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'pubnub';
-const category = 'pubsub';
+export const key = 'pubnub';
+export const category = 'pubsub';
 
 /*
  * Utility Methods
@@ -43,7 +43,7 @@ export default async function configure() {
     const config = { publishKey, subscribeKey, secretKey, client };
     Configs.emit('pubnub connected');
     console.log(chalk.green.bold('>> PubNub Connected <<'));
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     return config;
   } catch (err) {
     console.error(err);

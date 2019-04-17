@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'twilio';
-const category = 'sms';
+export const key = 'twilio';
+export const category = 'sms';
 
 /*
  * Loader
@@ -39,7 +39,7 @@ export default async function configure() {
     console.log(chalk.green.bold('>> Twilio Initialized <<'));
     Configs.emit('twilio initialized');
     const config = { account, secretKey, client };
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     return config;
   } catch (err) {
     console.error(err);

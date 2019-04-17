@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'stripe';
-const category = 'payment';
+export const key = 'stripe';
+export const category = 'payment';
 
 /*
  * Utility Methods
@@ -43,7 +43,7 @@ export default async function configure() {
     const config = { secretKey, publicKey, client };
     Configs.emit('stripe initialized');
     console.log(chalk.green.bold('>> Stripe Initialized <<'));
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     Configs.setPublicKey(key, publicKey);
     return config;
   } catch (err) {

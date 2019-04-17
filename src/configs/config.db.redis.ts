@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'redis';
-const category = 'database';
+export const key = 'redis';
+export const category = 'database';
 
 /*
  * Utility Methods
@@ -60,7 +60,7 @@ export default async function configure() {
     });
 
     const config = { url, client };
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     return config;
   } catch (err) {
     console.error(err);

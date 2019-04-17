@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'mongodb';
-const category = 'database';
+export const key = 'mongodb';
+export const category = 'database';
 
 /*
  * Loader
@@ -48,7 +48,7 @@ export default async function configure() {
   try {
     await mongoose.connect(url, { useNewUrlParser: true });
     const config = { url, client };
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     return config;
   } catch (err) {
     console.error(err);

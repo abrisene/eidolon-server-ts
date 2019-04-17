@@ -31,26 +31,13 @@ interface IConfig {
   [propName: string]: any;
 }
 
+interface IConfigManifest {
+  [propName: string]: string[];
+}
+
 /*
  * Constants
  */
-
-// This is not currently used for anything.
-const configMap = {
-  // jwt: './config.auth.jwt',
-  mongodb: './config.db.mongodb',
-  neo4j: './config.db.neo4j',
-  redis: './config.db.redis',
-  // sql: './config.db.sql',
-  mailgun: './config.mail.mailgun',
-  stripe: './config.payment.stripe',
-  ably: './config.pubsub.ably',
-  pubnub: './config.pubsub.pubnub',
-  twilio: './config.sms.twilio',
-  // google: './config.social.google',
-  // facebook: './config.social.facebook',
-  airtable: './config.spreadsheet.airtable',
-};
 
 /*
  * Module Exports
@@ -58,15 +45,15 @@ const configMap = {
 
 class Config extends EventEmitter {
   protected _status: string;
+  protected _manifest: IConfigManifest;
+  protected _configs: IConfigStore;
   protected _publicKeys: IKeyStore;
   protected _privateKeys: IKeyStore;
-  protected _configs: IConfigStore;
   constructor() {
     super();
     this._status = 'uninitialized';
 
-    this._publicKeys = {};
-    this._privateKeys = {};
+    this._manifest = { core: ['environment', 'server', 'uris'], keys: ['publicKeys', 'privateKeys'] };
 
     this._configs = {
       environment: {
@@ -82,10 +69,17 @@ class Config extends EventEmitter {
         client: process.env.CLIENT_URL,
       },
     };
+
+    this._publicKeys = {};
+    this._privateKeys = {};
   }
 
   get status() {
     return this._status;
+  }
+
+  get manifest() {
+    return this._manifest;
   }
 
   get publicKeys() {
@@ -105,6 +99,7 @@ class Config extends EventEmitter {
 
     this._status = 'initialized';
     this.emit('initialized');
+    console.log(this._manifest);
     return true;
   }
 
@@ -128,11 +123,17 @@ class Config extends EventEmitter {
     return this._configs[key] || undefined;
   }
 
-  public addConfig(key: string, value: IConfig) {
+  public addConfig(key: string, value: IConfig, category?: string) {
+    // Add to configs
     if (this._configs[key] !== undefined) {
       this._configs[key] = { ...this._configs[key], ...value };
     } else {
       this._configs[key] = { ...value };
+    }
+    // Add to manifest
+    if (category !== undefined) {
+      if (this._manifest[category] === undefined) this._manifest[category] = [];
+      this._manifest[category].push(key);
     }
   }
 }

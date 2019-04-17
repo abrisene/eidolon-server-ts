@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'airtable';
-const category = 'spreadsheet';
+export const key = 'airtable';
+export const category = 'spreadsheet';
 
 /*
  * Utility Methods
@@ -43,7 +43,7 @@ export default async function configure() {
     const config = { secretKey, client };
     Configs.emit('airtable initialized');
     console.log(chalk.green.bold('>> Airtable Initialized <<'));
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     return config;
   } catch (err) {
     console.error(err);

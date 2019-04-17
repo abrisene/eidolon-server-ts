@@ -21,8 +21,8 @@ const { jsonTryParse, exists } = utilities;
  * Constants
  */
 
-const key = 'ably';
-const category = 'pubsub';
+export const key = 'ably';
+export const category = 'pubsub';
 
 /*
  * Utility Methods
@@ -63,7 +63,7 @@ export default async function configure() {
   try {
     const client = await connectAbly(secretKey);
     const config = { secretKey, publicKey, client };
-    Configs.addConfig(key, config);
+    Configs.addConfig(key, config, category);
     Configs.setPublicKey(key, publicKey);
     return config;
   } catch (err) {
