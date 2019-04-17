@@ -42,6 +42,7 @@
     "pug": "2.0.3",
     "redis": "2.8.0",
     "sequelize": "5.3.1",
+    "socket.io": "2.2.0",
     "stripe": "6.28.0",
     "twilio": "3.30.0"
   },
@@ -58,6 +59,7 @@
     "@types/pubnub": "4.0.6",
     "@types/redis": "2.8.12",
     "@types/sequelize": "4.27.46",
+    "@types/socket.io": "2.1.2",
     "@types/stripe": "6.25.10",
     "@types/twilio": "0.0.10",
     "@types/validator": "10.11.0",

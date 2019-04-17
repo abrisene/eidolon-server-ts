@@ -103,26 +103,55 @@ class Config extends EventEmitter {
     return true;
   }
 
+  /**
+   * Returns a public key.
+   * @param key The key to return.
+   */
   public getPublicKey(key: string): string | number {
     return this._publicKeys[key];
   }
 
+  /**
+   * Sets a public key.
+   * @param key   The key to set.
+   * @param value The value to set the key to.
+   */
   public setPublicKey(key: string, value: string | number) {
     this._publicKeys[key] = value;
   }
 
+  /**
+   * Returns a private key.
+   * @param key The key to return.
+   */
   public getPrivateKey(key: string): string | number {
     return this._privateKeys[key];
   }
 
+  /**
+   * Sets a private key.
+   * @param key   The key to set.
+   * @param value The value to set the key to.
+   */
   public setPrivateKey(key: string, value: string | number) {
     this._privateKeys[key] = value;
   }
 
+  /**
+   * Returns a config.
+   * @param key The key of the config to return.
+   */
   public getConfig(key: string): IConfig {
     return this._configs[key] || undefined;
   }
 
+  /**
+   * Sets the value of a key within the configs and adds it to the manifest.
+   * If one does not already exist, a new one will be created.
+   * @param key      The key of the config to be set.
+   * @param value    The dictionary that the config should be set to.
+   * @param category The category that the config should be listed under in the manifest.
+   */
   public addConfig(key: string, value: IConfig, category?: string) {
     // Add to configs
     if (this._configs[key] !== undefined) {

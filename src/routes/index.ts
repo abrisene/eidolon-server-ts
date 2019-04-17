@@ -24,8 +24,7 @@ import Server from '../Server';
  * Module Exports
  */
 
-export default async function(server: Server) {
-  const app = server.app;
+export default async function(app: express.Application, server: Server) {
   const { appName, env } = Configs.getConfig('environment');
   const { corsUrls } = Configs.getConfig('server');
 
@@ -44,4 +43,6 @@ export default async function(server: Server) {
 
   // Routes
   await graphQLRoutes(server);
+
+  return;
 }
