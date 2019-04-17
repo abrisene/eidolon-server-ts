@@ -8,6 +8,7 @@
  */
 
 import { DocumentNode } from 'graphql';
+import { IResolvers } from 'graphql-tools';
 import { gql } from 'apollo-server-express';
 import utilities from '../../utilities';
 const { importPattern } = utilities;
@@ -16,12 +17,24 @@ const { importPattern } = utilities;
  * Utility Methods
  */
 
+function combineResolvers(oldResolver: IResolvers, newResolver: IResolvers): IResolvers {
+  const { Query: oldQuery = {}, Mutation: oldMutation = {}, ...oldRest } = oldResolver;
+  const { Query: newQuery = {}, Mutation: newMutation = {}, ...newRest } = newResolver;
+  return {
+    Query: { ...oldQuery, ...newQuery },
+    Mutation: { ...oldMutation, ...newMutation },
+    ...oldRest,
+    ...newRest,
+  } as IResolvers;
+}
+
 /*
  * Interfaces
  */
 
-interface ISchemaImport {
-  default: DocumentNode;
+export interface IGraphQLConfig {
+  schema: DocumentNode[];
+  resolvers: IResolvers;
 }
 
 /*
@@ -46,16 +59,15 @@ const linkSchema = gql`
  * Module Exports
  */
 
-export async function importSchemas(location = __dirname, init = false): Promise<DocumentNode[]> {
-  const schemas: DocumentNode[] = [];
-  await importPattern(/^(schema|scalar).*.js$/, async (schema: ISchemaImport) => {
-    schemas.push(schema.default);
-    return;
-  }, location);
-  const result = !init ? schemas : [linkSchema, ...schemas];
-  return result;
-}
+export async function importSchema(location = __dirname, init = false): Promise<IGraphQLConfig> {
+  const schema: DocumentNode[] = init ? [linkSchema] : [];
+  let resolvers: IResolvers = { Query: {}, Mutation: {} };
 
-export default [
-  linkSchema,
-];
+  // Load the schema and resolvers.
+  await importPattern(/^(schema|scalar).*.js$/, async (module, file) => {
+    schema.push(module.schema);
+    if (module.resolvers !== undefined) resolvers = combineResolvers(resolvers, module.resolvers);
+  }, location);
+
+  return { schema, resolvers };
+}

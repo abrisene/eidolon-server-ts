@@ -22,6 +22,7 @@ import Server from '../Server';
  */
 
 export default async function routes(server: Server, schemas?: DocumentNode[], resolvers?: IResolvers) {
+  // Get Configuration Variables
   const app = server.app;
   const { corsUrls } = Configs.getConfig('server');
   const redisConfig = Configs.getConfig('redis');

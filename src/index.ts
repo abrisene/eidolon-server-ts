@@ -14,7 +14,7 @@ async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;
   await Configs.init();
   if (server) await server.serve(9000);
-  console.log(Configs);
+  // console.log(Configs);
   return {
     server,
   };
