@@ -1,6 +1,6 @@
 /*
- * config.db.redis.ts
- * Redis Configuration
+ * config.db.mongodb.ts
+ * MongoDB Configuration
  */
 
 /**

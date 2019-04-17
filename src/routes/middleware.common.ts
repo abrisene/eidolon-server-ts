@@ -1,9 +1,13 @@
-import { NextFunction, Request, Response } from 'express';
-
 /*
  * middleware.common.ts
  * Common Middleware
  */
+
+/*
+ * Module Imports
+ */
+
+import { NextFunction, Request, Response } from 'express';
 
 /*
  * Module Exports

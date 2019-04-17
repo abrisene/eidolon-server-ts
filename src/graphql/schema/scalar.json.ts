@@ -1,5 +1,5 @@
 /*
- # scalar.json.js
+ # scalar.json.ts
  # GraphQL JSON Scalar
  */
 
