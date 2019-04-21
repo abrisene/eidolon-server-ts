@@ -8,12 +8,11 @@
  */
 
 import path from 'path';
-
+import express from 'express';
 import { ApolloServer, IResolvers } from 'apollo-server-express';
 import { DocumentNode } from 'graphql';
 import { RedisCache } from 'apollo-server-cache-redis';
 
-import { importConfig } from '../graphql';
 import Configs from '../configs';
 import Server from '../Server';
 
@@ -21,16 +20,13 @@ import Server from '../Server';
  * Module Exports
  */
 
-export default async function routes(server: Server, schemas?: DocumentNode[], resolvers?: IResolvers) {
+export default async function routes(app: express.Application, server: Server) {
   // Get Configuration Variables
-  const app = server.app;
   const { corsUrls } = Configs.getConfig('server');
   const redisConfig = Configs.getConfig('redis');
 
-  // Construct the Schema and Resolvers
-  const gqlConfig = await importConfig();
-  const gqlSchema = schemas || gqlConfig.schema;
-  const gqlResolvers: IResolvers = resolvers || gqlConfig.resolvers;
+  // Get the Schema and Resolvers from the Server
+  const gqlConfig = server.gqlSchema;
 
   // Set up the Redis Cache for GraphQL if Redis is configured
   let cache;
@@ -38,8 +34,8 @@ export default async function routes(server: Server, schemas?: DocumentNode[], r
 
   // Create the server.
   const gqlServer = new ApolloServer({
-    typeDefs: gqlSchema,
-    resolvers: gqlResolvers,
+    typeDefs: gqlConfig.schema,
+    resolvers: gqlConfig.resolvers,
     cache,
     context: async ({ req, res }) => ({
       req,

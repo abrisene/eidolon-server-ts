@@ -16,6 +16,8 @@ import Configs from './configs';
 import routes from './routes';
 import sockets from './sockets';
 
+import { importGraphQLConfig, importSchema, IGraphQLConfig } from './graphql';
+
 /*
  * Utility Methods
  */
@@ -42,12 +44,14 @@ export default class EidolonServer extends EventEmitter {
   protected _server: Server;
   protected _io: socketIO.Server;
   protected _status: string;
+  protected _gqlSchema: IGraphQLConfig;
   constructor() {
     super();
     this._app = express();
     this._server = undefined;
     this._io = undefined;
     this._status = 'inactive';
+    this._gqlSchema = undefined;
   }
 
   get app() {
@@ -64,6 +68,23 @@ export default class EidolonServer extends EventEmitter {
 
   get status() {
     return this._status;
+  }
+
+  get gqlSchema() {
+    return this._gqlSchema;
+  }
+
+  /**
+   * Loads GraphQL Schemas and Resolvers from a directory. Will initialize the schema if none currently exists.
+   * All filenames in the directory prepended with "schema." or "scalar." will be loaded.
+   * @param location The directory to load schemas from.
+   */
+  public async registerGraphQLSchema(location?: string) {
+    // Import the default schema if we haven't yet.
+    if (this._gqlSchema === undefined) this._gqlSchema = await importGraphQLConfig();
+    // Import the schema from the indicated location.
+    if (location !== undefined) this._gqlSchema = await importSchema(location, this._gqlSchema);
+    return this._gqlSchema;
   }
 
   /**
@@ -89,6 +110,8 @@ export default class EidolonServer extends EventEmitter {
    * @param port Port to serve from.
    */
   public async serve(port: number) {
+    // Initialize the GraphQL Schema if it has not been already
+    await this.registerGraphQLSchema();
 
     // Start the Server
     this._server = await asyncListen(this._app, port);

@@ -12,6 +12,15 @@ import socketIO from 'socket.io';
 import Configs from '../configs';
 import Server from '../Server';
 
+/**
+ * Interface
+ */
+
+export interface IEidolonSocketFunction {
+  app: socketIO.Server;
+  server: Server;
+}
+
 /*
  * Module Exports
  */

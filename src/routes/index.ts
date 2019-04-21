@@ -21,6 +21,15 @@ import Configs from '../configs';
 import Server from '../Server';
 
 /**
+ * Interface
+ */
+
+export interface IEidolonRouteFunction {
+  app: express.Application;
+  server: Server;
+}
+
+/**
  * Module Exports
  */
 
@@ -42,7 +51,7 @@ export default async function(app: express.Application, server: Server) {
   app.use(bodyParser.json());
 
   // Routes
-  await graphQLRoutes(server);
+  await graphQLRoutes(app, server);
 
   return;
 }
