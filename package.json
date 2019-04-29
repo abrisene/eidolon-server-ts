@@ -5,6 +5,14 @@
   "main": "lib/index.js",
   "author": "David Robinson <dr@monetise.io> (http://www.monetise.io)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abrisene/eidolon-server-ts/issues"
+  },
+  "homepage": "https://github.com/abrisene/eidolon-server-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abrisene/eidolon-server-ts"
+  },
   "scripts": {
     "start": "npm run serve",
     "build": "npm run clean && npm run build-ts && npm run tslint",
@@ -25,6 +33,7 @@
     "apollo-server": "2.4.8",
     "apollo-server-cache-redis": "0.3.1",
     "apollo-server-express": "2.4.8",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "1.18.3",
     "chalk": "2.4.2",
     "cookie-parser": "1.4.4",
@@ -34,6 +43,7 @@
     "graphql": "14.2.1",
     "graphql-type-json": "0.3.0",
     "ioredis": "4.9.0",
+    "jsonwebtoken": "8.5.1",
     "mailgun.js": "2.0.1",
     "mongoose": "5.5.0",
     "morgan": "1.9.1",
@@ -47,6 +57,7 @@
     "twilio": "3.30.0"
   },
   "devDependencies": {
+    "@types/bcrypt-nodejs": "0.0.30",
     "@types/bluebird": "3.5.26",
     "@types/cookie-parser": "1.4.1",
     "@types/dotenv": "6.1.1",
@@ -54,6 +65,7 @@
     "@types/graphql": "14.2.0",
     "@types/ioredis": "4.0.10",
     "@types/jest": "24.0.11",
+    "@types/jsonwebtoken": "8.3.2",
     "@types/mongoose": "5.3.25",
     "@types/morgan": "1.7.35",
     "@types/pubnub": "4.0.6",

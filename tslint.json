@@ -11,7 +11,13 @@
     "no-console": {
       "severity": "warning"
     },
+    "max-line-length": [
+      true, {
+        "ignore-pattern": "throw new Error|console."
+      }
+    ],
     "object-literal-sort-keys": [false, "match-declaration-order"],
+    "only-arrow-functions": [false],
     "ordered-imports": [
       true,
       {
@@ -19,7 +25,7 @@
         "named-imports-order": "lowercase-first"
       }
     ],
-    "variable-name": [true, "check-format", "allow-leading-underscore"]
+    "variable-name": [true, "check-format", "allow-leading-underscore", "allow-pascal-case"]
   },
   "rulesDirectory": [],
   "compilerOptions": {
