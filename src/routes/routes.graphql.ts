@@ -27,10 +27,12 @@ export default async function routes(app: express.Application, server: Server) {
 
   // Get the Schema and Resolvers from the Server
   const gqlConfig = server.gqlSchema;
+  const redisHost: string = redisConfig ? redisConfig.url : undefined;
 
   // Set up the Redis Cache for GraphQL if Redis is configured
   let cache;
-  if (redisConfig !== undefined) cache = new RedisCache({ url: redisConfig.url });
+  // if (redisConfig !== undefined) cache = new RedisCache({ url: redisConfig.url });
+  if (redisHost) cache = new RedisCache({ host: redisHost }); // TODO: Test This
 
   // Create the server.
   const gqlServer = new ApolloServer({
