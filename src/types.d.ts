@@ -8,4 +8,3 @@
  */
 
 declare module 'airtable';
-declare module 'mailgun.js';
