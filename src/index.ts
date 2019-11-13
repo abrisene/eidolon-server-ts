@@ -9,6 +9,7 @@
 
 import Configs from './configs';
 import Server from './Server';
+import models from './models';
 
 async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;
@@ -17,6 +18,7 @@ async function init(useServer = true): Promise<object> {
   // console.log(Configs);
   return {
     server,
+    models,
   };
 }
 
@@ -26,6 +28,7 @@ async function init(useServer = true): Promise<object> {
 
 module.exports = {
   init,
+  models,
   // config,
   // constants,
   // models,

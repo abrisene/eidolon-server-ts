@@ -14,12 +14,12 @@ import path from 'path';
  * Interfaces
  */
 
-interface IConfig {
-  [propName: string]: any;
+export interface IConfig {
+  [index: string]: any;
 }
 
-interface IEnvConfig {
-  [propName: string]: string;
+export interface IEnvConfig {
+  [index: string]: string;
 }
 
 /**

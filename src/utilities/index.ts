@@ -8,6 +8,7 @@
  */
 
 import * as common from './utilities.common';
+import * as mongoose from './utilities.mongoose';
 
 /*
  * Module Exports
@@ -15,4 +16,5 @@ import * as common from './utilities.common';
 
 export default {
   ...common,
+  ...mongoose,
 };
