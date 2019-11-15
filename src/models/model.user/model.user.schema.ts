@@ -10,7 +10,7 @@
 import mongoose, { Document, Model, Query, Schema } from 'mongoose';
 import utilities from '../../utilities';
 import identityMethods from './methods.user.identity';
-import authenticationMethods, { ISocialProfile } from './methods.user.authentication';
+import authenticationMethods, { ILoginResponse, ISocialProfile } from './methods.user.authentication';
 
 import { IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
@@ -33,18 +33,18 @@ export interface IUser extends Document {
   tsUpdated: Date;
   generateJWT: (expiration?: string) => Promise<string>;
   authenticatePassword: (password: string) => Promise<boolean>;
-  login: (identity: IUserIdentity) => Promise<string>;
-  loginPassword: (password: string, identity: IUserIdentity) => Promise<string>;
-  loginSocial: (profile: ISocialProfile, identity: IUserIdentity) => Promise<string>;
+  login: (identity: IUserIdentity) => Promise<ILoginResponse>;
+  loginPassword: (password: string, identity: IUserIdentity) => Promise<ILoginResponse>;
+  loginSocial: (profile: ISocialProfile, identity: IUserIdentity) => Promise<ILoginResponse>;
 }
 
 export interface IUserModel extends Model<IUser> {
   // requestPasswordReset: (email: string) => Promise<IToken>;
   setPasswordWithToken: (tokenHash: string, password: string) => Promise<IUser>;
-  authenticateEmail: (email: string, password: string, register?: boolean) => Promise<string>;
-  registerEmail: (email: string, password: string) => Promise<string>;
-  authenticateSocial: (type: string, profile: ISocialProfile, register?: boolean) => Promise<string>;
-  registerSocial: (type: string, profile: ISocialProfile) => Promise<string>;
+  authenticateEmail: (email: string, password: string, register?: boolean) => Promise<ILoginResponse>;
+  registerEmail: (email: string, password: string) => Promise<ILoginResponse>;
+  authenticateSocial: (type: string, profile: ISocialProfile, register?: boolean) => Promise<ILoginResponse>;
+  registerSocial: (type: string, profile: ISocialProfile) => Promise<ILoginResponse>;
 }
 
 /*

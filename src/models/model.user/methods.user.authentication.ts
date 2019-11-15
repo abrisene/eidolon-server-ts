@@ -37,6 +37,11 @@ export interface ISocialProfile {
   metadata?: object;
 }
 
+export interface ILoginResponse {
+  user: IUser;
+  jwt: string;
+}
+
 /*
  * Utility Methods
  */
@@ -99,7 +104,7 @@ schema.methods.authenticatePassword = async function(password: string): Promise<
  * IMPORTANT: This should only ever be called AFTER authentication.
  * @param identity The identity to login with.
  */
-schema.methods.login = async function(identity: IUserIdentity): Promise<string> {
+schema.methods.login = async function(identity: IUserIdentity): Promise<ILoginResponse> {
   let session;
   try {
     console.log('login');
@@ -113,8 +118,11 @@ schema.methods.login = async function(identity: IUserIdentity): Promise<string> 
     await identity.save();
     session.commitTransaction();
 
-    // Return the JWT for Login.
-    return this.generateJWT();
+    // Generate the JWT for Login.
+    const jwt = this.generateJWT();
+
+    // Return the user and the JWT.
+    return { user: this, jwt };
   } catch (err) {
     if (session) session.abortTransaction();
     return err;
@@ -126,7 +134,7 @@ schema.methods.login = async function(identity: IUserIdentity): Promise<string> 
  * @param password Plain text password to log the user in with.
  * @param identity Identity used for the password login.
  */
-schema.methods.loginPassword = async function(password: string, identity: IUserIdentity): Promise<string> {
+schema.methods.loginPassword = async function(password: string, identity: IUserIdentity): Promise<ILoginResponse> {
   try {
     if (!this.hash) throw new Error(`Could not log in ${identity.emailPrimary} (${identity.source}): Password Login Unsupported by User`);
     const authenticated = await this.authenticatePassword(password);
@@ -144,7 +152,7 @@ schema.methods.loginPassword = async function(password: string, identity: IUserI
  * @param profile Social profile.
  * @param identity Identity used for the social login.
  */
-schema.methods.loginSocial = async function(profile: ISocialProfile, identity: IUserIdentity): Promise<string> {
+schema.methods.loginSocial = async function(profile: ISocialProfile, identity: IUserIdentity): Promise<ILoginResponse> {
   try {
     console.log('Authenticated (Social)');
 
@@ -216,7 +224,7 @@ schema.statics.requestPasswordReset = async function(email: string): IToken {
  * @param password The password in plain text to be used for authentication.
  * @param register If true, will attempt to register the user.
  */
-schema.statics.authenticateEmail = async function(email: string, password: string, register: boolean = false): Promise<string> {
+schema.statics.authenticateEmail = async function(email: string, password: string, register: boolean = false): Promise<ILoginResponse> {
   const User = this;
   const Identity = this.db.model('User Identity');
   try {
@@ -240,7 +248,7 @@ schema.statics.authenticateEmail = async function(email: string, password: strin
  * @param email The email address to be used for registration.
  * @param password The password in plain text to be used for registration.
  */
-schema.statics.registerEmail = async function(email: string, password: string): Promise<string> {
+schema.statics.registerEmail = async function(email: string, password: string): Promise<ILoginResponse> {
   const User = this;
   const Identity = this.db.model('User Identity');
   let session;
@@ -298,7 +306,7 @@ schema.statics.registerEmail = async function(email: string, password: string): 
  * @param profile The profile object used for the authentication.
  * @param register If true, will attempt to register the user.
  */
-schema.statics.authenticateSocial = async function(type: string, profile: ISocialProfile, register: boolean = true): Promise<string> {
+schema.statics.authenticateSocial = async function(type: string, profile: ISocialProfile, register: boolean = true): Promise<ILoginResponse> {
   const User = this;
   const Identity = this.db.model('User Identity');
   try {
@@ -322,7 +330,7 @@ schema.statics.authenticateSocial = async function(type: string, profile: ISocia
  * @param type    The type of social profile.
  * @param profile The profile object used for the authentication.
  */
-schema.statics.registerSocial = async function(type: string, profile: ISocialProfile): Promise<string> {
+schema.statics.registerSocial = async function(type: string, profile: ISocialProfile): Promise<ILoginResponse> {
   const User = this;
   const Identity = this.db.model('User Identity');
   let session;
