@@ -9,7 +9,7 @@
 
 import Configs from './configs';
 import Server from './Server';
-import models from './models';
+import * as models from './models';
 
 async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;

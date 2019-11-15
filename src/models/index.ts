@@ -7,16 +7,20 @@
  * Module Dependencies
  */
 
-import User from './model.user/model.user.schema';
-import Identity from './model.user/model.user.identity';
-import Token from './model.authentication/model.token';
+// export * from './model.user/model.user.schema';
+// export * from './model.user/model.user.identity';
+// export * from './model.authentication/model.token';
 
 /*
  * Module Exports
  */
 
-export default {
+export * from './model.user/model.user.schema';
+export * from './model.user/model.user.identity';
+export * from './model.authentication/model.token';
+
+/* export default {
   User,
   Identity,
   Token,
-};
+}; */

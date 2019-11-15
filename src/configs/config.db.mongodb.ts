@@ -32,6 +32,7 @@ export default async function configure() {
   const url = process.env.MONGODB_URL;
   if (!url) return undefined;
 
+  mongoose.set('useCreateIndex', true);
   const client = mongoose.connection;
 
   client.on('error', (err) => {
@@ -46,7 +47,10 @@ export default async function configure() {
   });
 
   try {
-    await mongoose.connect(url, { useNewUrlParser: true });
+    await mongoose.connect(url, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    });
     const config = { url, client };
     Configs.addConfig(key, config, category);
     return config;

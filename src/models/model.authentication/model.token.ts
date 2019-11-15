@@ -94,4 +94,5 @@ schema.methods.redeem = async function(session?: any): Promise<IToken> {
  * Module Exports
  */
 
-export default mongoose.model<IToken>('Token', schema);
+// export default mongoose.model<IToken>('Token', schema);
+export const Token = mongoose.model<IToken>('Token', schema);

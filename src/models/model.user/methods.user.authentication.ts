@@ -29,7 +29,7 @@ const schema: ISchemaFragment = {
   query: {},
 };
 
-interface ISocialProfile {
+export interface ISocialProfile {
   id: string;
   email: string;
   displayName?: string;

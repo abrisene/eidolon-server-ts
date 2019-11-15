@@ -7,7 +7,7 @@
  * Module Dependencies
  */
 
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 import { IToken } from '../model.authentication/model.token';
 
 /*
@@ -25,8 +25,12 @@ export interface IUserIdentity extends Document {
   tsAccessed: Date[];
   tsCreated: Date;
   tsUpdated: Date;
+  generateToken: (type: string, duration: number) => Promise<IToken|Error>;
 }
 
+export interface IUserIdentityModel extends Model<IUserIdentity> {
+  validateWithToken: (hash: string) => Promise<IUserIdentity|Error>;
+}
 /*
  * Constants
  */
@@ -111,4 +115,5 @@ schema.statics.validateWithToken = async function(hash: string): Promise<IUserId
  * Module Exports
  */
 
-export default mongoose.model<IUserIdentity>('User Identity', schema);
+// export default mongoose.model<IUserIdentity>('User Identity', schema);
+export const UserIdentity = mongoose.model<IUserIdentity, IUserIdentityModel>('User Identity', schema);

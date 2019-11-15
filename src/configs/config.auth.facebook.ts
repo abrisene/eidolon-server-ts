@@ -32,7 +32,7 @@ export const category = 'auth';
  */
 
 export default async function configure() {
-  const envConfig = jsonTryParse(process.env.GOOGLE_AUTH);
+  const envConfig = jsonTryParse(process.env.FACEBOOK_AUTH);
   if (!envConfig) return undefined;
   if (!exists([envConfig.clientID, envConfig.clientSecret], true)) return undefined;
   const { clientID, clientSecret, profileFields } = envConfig;

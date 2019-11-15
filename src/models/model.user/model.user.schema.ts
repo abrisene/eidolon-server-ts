@@ -7,10 +7,13 @@
  * Module Dependencies
  */
 
-import mongoose, { Document, Query, Schema } from 'mongoose';
+import mongoose, { Document, Model, Query, Schema } from 'mongoose';
 import utilities from '../../utilities';
 import identityMethods from './methods.user.identity';
-import authenticationMethods from './methods.user.authentication';
+import authenticationMethods, { ISocialProfile } from './methods.user.authentication';
+
+import { IUserIdentity } from './model.user.identity';
+import { IToken } from '../model.authentication/model.token';
 
 const { stitchMongooseSchema } = utilities;
 
@@ -28,6 +31,20 @@ export interface IUser extends Document {
   tsLogin: Date[];
   tsCreated: Date;
   tsUpdated: Date;
+  generateJWT: (expiration?: string) => Promise<string>;
+  authenticatePassword: (password: string) => Promise<boolean>;
+  login: (identity: IUserIdentity) => Promise<string>;
+  loginPassword: (password: string, identity: IUserIdentity) => Promise<string>;
+  loginSocial: (profile: ISocialProfile, identity: IUserIdentity) => Promise<string>;
+}
+
+export interface IUserModel extends Model<IUser> {
+  // requestPasswordReset: (email: string) => Promise<IToken>;
+  setPasswordWithToken: (tokenHash: string, password: string) => Promise<IUser>;
+  authenticateEmail: (email: string, password: string, register?: boolean) => Promise<string>;
+  registerEmail: (email: string, password: string) => Promise<string>;
+  authenticateSocial: (type: string, profile: ISocialProfile, register?: boolean) => Promise<string>;
+  registerSocial: (type: string, profile: ISocialProfile) => Promise<string>;
 }
 
 /*
@@ -83,4 +100,4 @@ stitchMongooseSchema(schema, authenticationMethods);
  * Module Exports
  */
 
-export default mongoose.model<IUser>('User', schema);
+export const User = mongoose.model<IUser, IUserModel>('User', schema);
