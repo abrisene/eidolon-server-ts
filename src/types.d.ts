@@ -8,3 +8,4 @@
  */
 
 declare module 'airtable';
+declare module 'passport-google-token';

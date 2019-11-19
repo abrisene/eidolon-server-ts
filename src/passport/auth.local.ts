@@ -25,13 +25,16 @@ const options = {
  * Module Exports
  */
 
+/**
+ * Builds Local Passport Strategy for Middleware
+ */
 export default async function() {
   return new Strategy(options, async (email, password, done) => {
     try {
       const result = await User.authenticateEmail(email, password);
-      return done(null, result.user);
+      return done(null, result);
     } catch (err) {
-      return done(null, false);
+      return done(err, false);
     }
   });
 }

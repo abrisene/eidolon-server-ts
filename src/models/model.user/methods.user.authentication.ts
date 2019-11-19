@@ -12,6 +12,16 @@ import { ISchemaFragment } from '../../utilities/utilities.mongoose';
 import { IUser } from './model.user.schema';
 import { IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
+import { ISocialProfile } from '../../passport/auth.social';
+
+/*
+ * Constants
+ */
+
+export interface ILoginResponse {
+  user: IUser;
+  jwt: string;
+}
 
 /*
  * Constants
@@ -28,19 +38,6 @@ const schema: ISchemaFragment = {
   statics: {},
   query: {},
 };
-
-export interface ISocialProfile {
-  id: string;
-  email: string;
-  displayName?: string;
-  gender?: string;
-  metadata?: object;
-}
-
-export interface ILoginResponse {
-  user: IUser;
-  jwt: string;
-}
 
 /*
  * Utility Methods

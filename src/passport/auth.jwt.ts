@@ -33,6 +33,9 @@ const extractors = [
  * Module Exports
  */
 
+/**
+ * Builds JWT Passport Strategy for Middleware
+ */
 export default async function() {
   const options = Configs.getConfig('jwt').options;
   options.jwtFromRequest = ExtractJwt.fromExtractors(extractors);
