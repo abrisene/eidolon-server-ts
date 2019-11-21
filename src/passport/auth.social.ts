@@ -102,6 +102,7 @@ export async function authGoogle() {
     const userData = extractGoogleProfile(profile);
     try {
       const result = await User.authenticateSocial('google', userData);
+      return done(null, result.user);
     } catch (err) {
       return done(err, false);
     }
@@ -117,7 +118,7 @@ export async function authFacebook() {
     const userData = extractFacebookProfile(profile);
     try {
       const result = await User.authenticateSocial('facebook', userData);
-      return done(null, result);
+      return done(null, result.user);
     } catch (err) {
       return done(err, false);
     }

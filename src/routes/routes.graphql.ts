@@ -15,6 +15,8 @@ import { RedisCache } from 'apollo-server-cache-redis';
 
 import Configs from '../configs';
 import Server from '../Server';
+import * as models from '../models';
+import { authenticate } from './middleware.auth';
 
 /**
  * Module Exports
@@ -43,8 +45,8 @@ export default async function routes(app: express.Application, server: Server) {
       req,
       res,
       Configs,
-      // user
-      // models
+      user: req.user,
+      models,
     }),
     playground: {
       settings: {
@@ -53,6 +55,8 @@ export default async function routes(app: express.Application, server: Server) {
     },
   });
 
+  // Apply Middleware
+  app.use('/graphql', authenticate.optional);
   gqlServer.applyMiddleware({
     app,
     path: '/graphql',

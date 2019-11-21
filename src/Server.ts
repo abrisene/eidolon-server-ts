@@ -11,6 +11,7 @@ import { Server } from 'http';
 import EventEmitter from 'events';
 import express from 'express';
 import socketIO from 'socket.io';
+import chalk from 'chalk';
 import Configs from './configs';
 
 import routes from './routes';
@@ -123,7 +124,8 @@ export default class EidolonServer extends EventEmitter {
     await this.registerRoute(routes);
     await this.registerSocket(sockets);
 
-    console.log(`> Server Listening on ${port}`);
+    console.log(chalk`\n{cyan.bold > Server Listening on ${port.toString()}}\n`);
+
     this._status = 'serving';
     this.emit('serving');
   }

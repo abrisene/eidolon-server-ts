@@ -48,6 +48,8 @@ export interface IUserModel extends Model<IUser> {
   registerSocial: (type: string, profile: ISocialProfile) => Promise<ILoginResponse>;
 }
 
+export { ILoginResponse } from './methods.user.authentication';
+
 /*
  * Schema
  */

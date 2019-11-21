@@ -15,6 +15,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import logger from 'morgan';
 
+import passport from 'passport';
+import authStrategies from '../passport';
+
 import graphQLRoutes from './routes.graphql';
 
 import Configs from '../configs';
@@ -45,10 +48,13 @@ export default async function(app: express.Application, server: Server) {
   // Middleware Configs
   app.use(cors({ origin: corsUrls, credentials: true }));
   app.use(express.static('public'));
-  if (env === 'production') app.use(logger('combined'));
-  app.use(cookieParser());
+  // if (env === 'production') app.use(logger('combined'));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+  app.use(cookieParser());
+
+  app.use(passport.initialize());
+  await authStrategies();
 
   // Routes
   await graphQLRoutes(app, server);

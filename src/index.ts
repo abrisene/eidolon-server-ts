@@ -15,8 +15,9 @@ async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;
   await Configs.init();
   if (server) await server.serve(9000);
-  // console.log(Configs);
+
   return {
+    Configs,
     server,
     models,
   };
@@ -27,10 +28,10 @@ async function init(useServer = true): Promise<object> {
  */
 
 module.exports = {
+  Configs,
   init,
   models,
   // config,
   // constants,
-  // models,
   // modules,
 };

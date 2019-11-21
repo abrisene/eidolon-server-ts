@@ -19,8 +19,10 @@ import { ISocialProfile } from '../../passport/auth.social';
  */
 
 export interface ILoginResponse {
-  user: IUser;
-  jwt: string;
+  user?: IUser;
+  jwt?: string;
+  err?: Error;
+  info?: any;
 }
 
 /*
@@ -135,11 +137,10 @@ schema.methods.loginPassword = async function(password: string, identity: IUserI
   try {
     if (!this.hash) throw new Error(`Could not log in ${identity.emailPrimary} (${identity.source}): Password Login Unsupported by User`);
     const authenticated = await this.authenticatePassword(password);
-    console.log('Authenticated (Password)');
     if (!authenticated) throw new Error(`Could not log in ${identity.emailPrimary} (${identity.source}): Incorrect Password`);
     return this.login(identity);
   } catch (err) {
-    return err;
+    return { err };
   }
 };
 
@@ -157,7 +158,7 @@ schema.methods.loginSocial = async function(profile: ISocialProfile, identity: I
 
     return this.login(identity);
   } catch (err) {
-    return err;
+    return { err };
   }
 };
 
@@ -227,7 +228,7 @@ schema.statics.authenticateEmail = async function(email: string, password: strin
   try {
     // Check to see if we have a user with the primary email.
     const identity = await Identity.findOne({ type: 'email', source: 'user', key: email }).populate('owner');
-
+    console.log(identity);
     if (identity) { // If we do, log in using the password.
       return identity.owner.loginPassword(password, identity);
     } else if (register) { // If not, try to register a new user if registration is enabled.

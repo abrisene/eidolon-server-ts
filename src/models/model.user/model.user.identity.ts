@@ -21,8 +21,8 @@ export interface IUserIdentity extends Document {
   type: string;
   key: string;
   source: string;
-  tsValidated: Date;
-  tsAccessed: Date[];
+  tsValidated?: Date;
+  tsAccessed?: Date[];
   tsCreated: Date;
   tsUpdated: Date;
   generateToken: (type: string, duration: number) => Promise<IToken|Error>;

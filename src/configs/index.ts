@@ -63,6 +63,7 @@ class Config extends EventEmitter {
       server: {
         corsUrls: jsonTryParse(process.env.CORS_URLS), // TODO: Need to properly configure CORS
         port: process.env.PORT || 8000,
+        useHttps: process.env.HTTPS || false,
       },
       uris: {
         host: process.env.SERVER_URL,
@@ -99,7 +100,10 @@ class Config extends EventEmitter {
 
     this._status = 'initialized';
     this.emit('initialized');
+
+    console.log('\nManifest:');
     console.log(this._manifest);
+
     return true;
   }
 
