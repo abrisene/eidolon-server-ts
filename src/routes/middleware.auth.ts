@@ -9,9 +9,30 @@
 
 import passport from 'passport';
 import Configs from '../configs';
+
+// import { IUser } from '../models';
 /**
  * Module Exports
  */
+
+/**
+ * Middleware to generate a JWT if the request contains a valid user.
+ * @param req Express request.
+ * @param res Express response.
+ * @param next Express callback.
+ */
+export async function generateUserToken(req: Express.Request, res: any, next: () => any) {
+  const user: any = req.user;
+  const { useHttps } = Configs.getConfig('server');
+
+  if (!user) {
+    res.status(400).send({ err: 'Could not login' });
+  } else {
+    const token = user.generateJWT();
+    res.cookie('jwt', token, { httpOnly: true, secure: useHttps });
+    next();
+  }
+}
 
 /**
  * Middleware to require JWT authentication. Injects user into Request.

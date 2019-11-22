@@ -166,9 +166,8 @@ const mutation: IResolverObject = {
         register,
       );
       if (auth.err) throw new Error(auth.err);
-      const token = await auth.user.generateJWT();
       req.user = auth.user;
-      res.cookie('jwt', token, { httpOnly: true, secure: useHttps });
+      res.cookie('jwt', auth.jwt, { httpOnly: true, secure: useHttps });
       return req.user;
     } catch (err) {
       res.status(401);
@@ -186,9 +185,8 @@ const mutation: IResolverObject = {
       };
       const auth = await authSocial(provider, req, res);
       if (auth.err) throw new Error(auth.err);
-      const token = auth.user.generateJWT();
       req.user = auth.user;
-      res.cookie('jwt', token, { httpOnly: true, secure: useHttps });
+      res.cookie('jwt', auth.jwt, { httpOnly: true, secure: useHttps });
       return req.user;
     } catch (err) {
       res.status(401);

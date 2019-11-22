@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import EventEmitter from 'events';
 import fs from 'fs';
 import utilities from '../utilities';
+import { getServerUrl } from './utilities.config';
 
 dotenv.config();
 const { asyncForEach, jsonTryParse } = utilities;
@@ -61,12 +62,13 @@ class Config extends EventEmitter {
         env: process.env.NODE_ENV || 'production',
       },
       server: {
+        hostname: process.env.HOSTNAME,
         corsUrls: jsonTryParse(process.env.CORS_URLS), // TODO: Need to properly configure CORS
         port: process.env.PORT || 8000,
-        useHttps: process.env.HTTPS || false,
+        useHttps: process.env.HTTPS === 'true',
       },
       uris: {
-        host: process.env.SERVER_URL,
+        host: getServerUrl(),
         client: process.env.CLIENT_URL,
       },
     };

@@ -19,6 +19,7 @@ import passport from 'passport';
 import authStrategies from '../passport';
 
 import graphQLRoutes from './routes.graphql';
+import authRoutes from './routes.auth';
 
 import Configs from '../configs';
 import Server from '../Server';
@@ -58,6 +59,7 @@ export default async function(app: express.Application, server: Server) {
 
   // Routes
   await graphQLRoutes(app, server);
+  await authRoutes(app, server);
 
   return;
 }

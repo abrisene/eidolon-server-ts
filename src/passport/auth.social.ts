@@ -32,20 +32,17 @@ export interface ISocialProfile {
  * Constants
  */
 
-const G_CALLBACK_URL = '';
-const FB_CALLBACK_URL = '';
-
 /**
  * Returns mapped Options for the indicated social auth service from Configs.
  * @param service The key of the config used for the social service.
  */
 function getOptions(service: string): StrategyOption|IOAuth2StrategyOption {
-  const callbackURL = service === 'facebook' ? FB_CALLBACK_URL : G_CALLBACK_URL;
-  const { clientID, clientSecret } = Configs.getConfig(service);
+  const { clientID, clientSecret, callbackURL, profileFields } = Configs.getConfig(service);
   const options = {
     clientID,
     clientSecret,
     callbackURL,
+    profileFields,
   };
   return options;
 }
@@ -99,8 +96,9 @@ function extractFacebookProfile(profile: FacebookProfile): ISocialProfile {
 export async function authGoogle() {
   const options = getOptions('google');
   return new GoogleStrategy(options, async (accessToken, refreshToken, profile, done) => {
-    const userData = extractGoogleProfile(profile);
+
     try {
+      const userData = extractGoogleProfile(profile);
       const result = await User.authenticateSocial('google', userData);
       return done(null, result.user);
     } catch (err) {
@@ -115,11 +113,12 @@ export async function authGoogle() {
 export async function authFacebook() {
   const options = getOptions('facebook');
   return new FacebookStrategy(options, async (accessToken, refreshToken, profile, done) => {
-    const userData = extractFacebookProfile(profile);
     try {
+      const userData = extractFacebookProfile(profile);
       const result = await User.authenticateSocial('facebook', userData);
       return done(null, result.user);
     } catch (err) {
+      console.log(err);
       return done(err, false);
     }
   });

@@ -124,7 +124,10 @@ export default class EidolonServer extends EventEmitter {
     await this.registerRoute(routes);
     await this.registerSocket(sockets);
 
-    console.log(chalk`\n{cyan.bold > Server Listening on ${port.toString()}}\n`);
+    const { host } = Configs.getConfig('uris');
+
+    // console.log(chalk`\n{cyan.bold > Server Listening on ${port.toString()}}\n`);
+    console.log(chalk`\n{cyan.bold > Server Listening on} {white.bold ${host}}\n`);
 
     this._status = 'serving';
     this.emit('serving');

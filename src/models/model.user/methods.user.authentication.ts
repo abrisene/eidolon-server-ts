@@ -85,7 +85,7 @@ async function authenticatePasswordHash(password: string, hash: string): Promise
  * Generates a signed JWT for the user with a duration defined by the expiration.
  * @param expiration The duration till the token will expire. Usually defaults to '1d'
  */
-schema.methods.generateJWT = async function(expiration?: string): Promise<string> {
+schema.methods.generateJWT = function(expiration?: string): string {
   return generateJWT(this._id.toString(), expiration);
 };
 
@@ -106,7 +106,6 @@ schema.methods.authenticatePassword = async function(password: string): Promise<
 schema.methods.login = async function(identity: IUserIdentity): Promise<ILoginResponse> {
   let session;
   try {
-    console.log('login');
     // Start the session and the transaction.
     session = await this.db.startSession();
     session.startTransaction();
@@ -228,7 +227,6 @@ schema.statics.authenticateEmail = async function(email: string, password: strin
   try {
     // Check to see if we have a user with the primary email.
     const identity = await Identity.findOne({ type: 'email', source: 'user', key: email }).populate('owner');
-    console.log(identity);
     if (identity) { // If we do, log in using the password.
       return identity.owner.loginPassword(password, identity);
     } else if (register) { // If not, try to register a new user if registration is enabled.
@@ -369,7 +367,7 @@ schema.statics.registerSocial = async function(type: string, profile: ISocialPro
         emailPrimary: profile.email,
         emails: [profile.email],
         owner: user,
-        type,
+        type: 'email',
         key: profile.id,
         source: type,
         tsValidated: tsNow,
@@ -386,7 +384,7 @@ schema.statics.registerSocial = async function(type: string, profile: ISocialPro
       owner: user,
       type,
       key: profile.id,
-      source: 'social',
+      source: type,
       tsValidated: tsNow,
     });
 
@@ -403,6 +401,7 @@ schema.statics.registerSocial = async function(type: string, profile: ISocialPro
     // Login with the social identity and generate the JWT.
     return user.loginSocial(profile, socialIdentity);
   } catch (err) {
+    console.log(err);
     if (session) session.abortTransaction();
     return err;
   }
