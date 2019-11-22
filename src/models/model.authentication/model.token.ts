@@ -73,6 +73,8 @@ schema.index(
 
 /**
  * Redeems a token if it has uses remaining and hasn't expired.
+ * @param save Should the token be saved during redemption?
+ *             If you're using a session you probably want to handle this manually.
  * @param session The session to be used for the redemption transaction.
  */
 schema.methods.redeem = async function(save: boolean = true, session?: any): Promise<boolean> {
