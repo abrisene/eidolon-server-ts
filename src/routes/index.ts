@@ -48,7 +48,7 @@ export default async function(app: express.Application, server: Server) {
 
   // Middleware Configs
   app.use(cors({ origin: corsUrls, credentials: true }));
-  app.use(express.static('public'));
+  app.use('/static', express.static(path.join(__dirname, '../../public')));
   // if (env === 'production') app.use(logger('combined'));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());

@@ -8,6 +8,7 @@
  */
 
 import Configs from '../../configs';
+import { sendPasswordResetEmail, sendValidationEmail } from './mail.user';
 import { ISchemaFragment } from '../../utilities/utilities.mongoose';
 import { IUser } from './model.user.schema';
 import { IUserIdentity } from './model.user.identity';
@@ -31,7 +32,7 @@ export interface ILoginResponse {
 export const constants = {
   token: {
     resetPassword: 'RESET_PASSWORD',
-
+    validateEmail: 'VALIDATE_EMAIL',
   },
 };
 
@@ -235,6 +236,7 @@ schema.statics.authenticateEmail = async function(email: string, password: strin
       throw new Error(`Identity not found for Email: ${email}`);
     }
   } catch (err) {
+    console.log(err);
     return err;
   }
 };
@@ -280,17 +282,23 @@ schema.statics.registerEmail = async function(email: string, password: string): 
     user.identityPrimary = identity;
     user.identities.push(identity);
 
+    // Create the token for email authentication.
+    let token = identity.generateToken(constants.token.validateEmail, 86400 * 7);
+
     // Save the documents and commit the transactions.
     user = await user.save({ session });
     identity = await identity.save({ session });
-    await session.commitTransaction();
+    token = await token.save({ session });
 
-    // TODO: Send out identity verification email.
-    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    // Send out the identity verification email.
+    const msg = await sendValidationEmail(email, token.token);
+
+    await session.commitTransaction();
 
     // Login with the password and generate the JWT.
     return user.loginPassword(password, identity);
   } catch (err) {
+    console.log(err);
     if (session) session.abortTransaction();
     return err;
   }

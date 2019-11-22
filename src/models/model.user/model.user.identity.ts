@@ -71,14 +71,14 @@ const schema = new Schema({
  * @param type     The type of token to generate.
  * @param duration The token's duration.
  */
-schema.methods.generateToken = async function(type: string, duration: number = 86400): Promise<IToken|Error> {
+schema.methods.generateToken = function(type: string, duration: number = 86400): Promise<IToken|Error> {
   const Token = this.db.model('Token');
   const token = new Token({
     owner: this._id,
     type,
     tsExpiration: Date.now() + (duration * 1000),
   });
-  return token.save();
+  return token;
 };
 
 /*

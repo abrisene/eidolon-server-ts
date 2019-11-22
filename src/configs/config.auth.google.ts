@@ -10,13 +10,12 @@
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 
-import utilities from '../utilities';
+import { exists, jsonTryParse } from '../utilities';
 import Configs from './index';
 
 import { getServerUrl } from './utilities.config';
 
 dotenv.config();
-const { jsonTryParse, exists } = utilities;
 
 /*
  * Constants

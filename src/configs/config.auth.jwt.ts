@@ -11,11 +11,9 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
-import utilities from '../utilities';
 import Configs from './index';
 
 dotenv.config();
-const { jsonTryParse, exists } = utilities;
 
 /*
  * Interfaces

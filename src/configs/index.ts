@@ -10,11 +10,11 @@
 import dotenv from 'dotenv';
 import EventEmitter from 'events';
 import fs from 'fs';
-import utilities from '../utilities';
+import { asyncForEach, jsonTryParse } from '../utilities';
 import { getServerUrl } from './utilities.config';
 
 dotenv.config();
-const { asyncForEach, jsonTryParse } = utilities;
+// const { asyncForEach, jsonTryParse } = utilities;
 
 /*
  * Interfaces
@@ -65,11 +65,12 @@ class Config extends EventEmitter {
         hostname: process.env.HOSTNAME,
         corsUrls: jsonTryParse(process.env.CORS_URLS), // TODO: Need to properly configure CORS
         port: process.env.PORT || 8000,
-        useHttps: process.env.HTTPS === 'true',
+        useHttps: process.env.HTTPS === 'true', // TODO: Need to properly configure https.
       },
       uris: {
         host: getServerUrl(),
         client: process.env.CLIENT_URL,
+        logo: process.env.LOGO_URL || `${getServerUrl()}/static/images/app_logo.png`,
       },
     };
 

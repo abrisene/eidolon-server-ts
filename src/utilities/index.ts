@@ -4,17 +4,8 @@
  */
 
 /*
- * Module Dependencies
- */
-
-import * as common from './utilities.common';
-import * as mongoose from './utilities.mongoose';
-
-/*
  * Module Exports
  */
 
-export default {
-  ...common,
-  ...mongoose,
-};
+export * from './utilities.common';
+export * from './utilities.mongoose';

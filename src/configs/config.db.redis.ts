@@ -11,11 +11,10 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import Redis from 'ioredis';
 
-import utilities from '../utilities';
+import { exists, jsonTryParse } from '../utilities';
 import Configs from './index';
 
 dotenv.config();
-const { jsonTryParse, exists } = utilities;
 
 /*
  * Constants

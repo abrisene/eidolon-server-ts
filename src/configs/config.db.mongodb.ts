@@ -11,11 +11,9 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
-import utilities from '../utilities';
 import Configs from './index';
 
 dotenv.config();
-const { jsonTryParse, exists } = utilities;
 
 /*
  * Constants

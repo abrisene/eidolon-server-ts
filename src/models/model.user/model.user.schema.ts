@@ -8,15 +8,13 @@
  */
 
 import mongoose, { Document, Model, Query, Schema } from 'mongoose';
-import utilities from '../../utilities';
+import { stitchMongooseSchema } from '../../utilities';
 import identityMethods from './methods.user.identity';
 import authenticationMethods, { ILoginResponse } from './methods.user.authentication';
 
 import { IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
 import { ISocialProfile } from '../../passport/auth.social';
-
-const { stitchMongooseSchema } = utilities;
 
 /*
  * Interface

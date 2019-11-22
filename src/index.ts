@@ -33,7 +33,6 @@ module.exports = {
   Configs,
   init,
   models,
-  // config,
   // constants,
   // modules,
 };

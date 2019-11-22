@@ -44,7 +44,7 @@
     "graphql-type-json": "0.3.0",
     "ioredis": "4.9.0",
     "jsonwebtoken": "8.5.1",
-    "mailgun-js": "0.22.0",
+    "mailgen": "2.0.10",
     "mongoose": "5.7.9",
     "morgan": "1.9.1",
     "neo4j-driver": "1.7.3",
@@ -61,6 +61,7 @@
     "sequelize": "6.0.0",
     "socket.io": "2.2.0",
     "stripe": "6.28.0",
+    "ts-mailgun": "0.3.8",
     "twilio": "3.30.0"
   },
   "devDependencies": {
@@ -73,7 +74,7 @@
     "@types/ioredis": "4.0.10",
     "@types/jest": "24.0.11",
     "@types/jsonwebtoken": "8.3.2",
-    "@types/mailgun-js": "0.22.3",
+    "@types/mailgen": "2.0.2",
     "@types/mongoose": "5.5.30",
     "@types/morgan": "1.7.35",
     "@types/passport-facebook": "2.1.9",
