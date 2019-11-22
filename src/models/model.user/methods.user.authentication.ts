@@ -11,7 +11,7 @@ import Configs from '../../configs';
 import { sendPasswordResetEmail, sendValidationEmail } from './mail.user';
 import { ISchemaFragment } from '../../utilities/utilities.mongoose';
 import { IUser } from './model.user.schema';
-import { IUserIdentity } from './model.user.identity';
+import { constants as identityConstants, IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
 import { ISocialProfile } from '../../passport/auth.social';
 
@@ -32,7 +32,6 @@ export interface ILoginResponse {
 export const constants = {
   token: {
     resetPassword: 'RESET_PASSWORD',
-    validateEmail: 'VALIDATE_EMAIL',
   },
 };
 
@@ -113,8 +112,8 @@ schema.methods.login = async function(identity: IUserIdentity): Promise<ILoginRe
     const ts = new Date();
     this.tsLogin.push(ts);
     identity.tsAccessed.push(ts);
-    await this.save();
-    await identity.save();
+    await this.save({ session });
+    await identity.save({ session });
     session.commitTransaction();
 
     // Generate the JWT for Login.
@@ -283,7 +282,7 @@ schema.statics.registerEmail = async function(email: string, password: string): 
     user.identities.push(identity);
 
     // Create the token for email authentication.
-    let token = identity.generateToken(constants.token.validateEmail, 86400 * 7);
+    let token = identity.generateToken(identityConstants.token.validateIdentity, 86400 * 7);
 
     // Save the documents and commit the transactions.
     user = await user.save({ session });

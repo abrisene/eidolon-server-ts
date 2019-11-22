@@ -7,6 +7,7 @@
  * Module Dependencies
  */
 
+import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import Configs from '../configs';
 
@@ -21,7 +22,7 @@ import Configs from '../configs';
  * @param res Express response.
  * @param next Express callback.
  */
-export async function generateUserToken(req: Express.Request, res: any, next: () => any) {
+export function generateUserToken(req: Request, res: Response, next: NextFunction) {
   const user: any = req.user;
   const { useHttps } = Configs.getConfig('server');
 
@@ -35,15 +36,27 @@ export async function generateUserToken(req: Express.Request, res: any, next: ()
 }
 
 /**
+ * Middleware to clear the JWT from the current user's cookies.
+ * @param req Express request.
+ * @param res Express response.
+ * @param next Express callback.
+ */
+export function clearUserToken(req: Request, res: Response, next: NextFunction) {
+  const { useHttps } = Configs.getConfig('server');
+  res.cookie('jwt', '', { httpOnly: true, secure: useHttps });
+  next();
+}
+
+/**
  * Middleware to require JWT authentication. Injects user into Request.
  * @param req Express request.
  * @param res Express response.
  * @param next Express callback.
  */
 function authenticateJwtRequired(
-  req: Express.Request,
-  res: any,
-  next: () => any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) {
   return passport.authenticate(['jwt'], { session: false }, (err, user) => {
     req.user = user;
@@ -58,9 +71,9 @@ function authenticateJwtRequired(
  * @param next Express callback.
  */
 function authenticateJwtOptional(
-  req: Express.Request,
-  res: any,
-  next: () => any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) {
   return passport.authenticate(['jwt'], { session: false }, (err, user) => {
     req.user = user;

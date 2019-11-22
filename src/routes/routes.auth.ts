@@ -14,7 +14,8 @@ import passport from 'passport';
 import Configs from '../configs';
 import Server from '../Server';
 import * as models from '../models';
-import { authenticate, generateUserToken } from './middleware.auth';
+import { asyncRoute } from './middleware.common';
+import { authenticate, clearUserToken, generateUserToken } from './middleware.auth';
 
 /**
  * Module Exports
@@ -26,9 +27,12 @@ export default async function routes(app: express.Application, server: Server) {
   const facebook = Configs.getConfig('facebook');
   const google = Configs.getConfig('google');
 
+  // "Session" Routes
+  app.post('/auth/logout', clearUserToken, (req, res) => res.redirect('/'));
+
   // Social Login Routes
 
-  // Facebook Authetnication Routes
+  // Facebook Authentication Routes
   if (facebook.clientID) {
     app.get(
       '/auth/facebook',
@@ -57,4 +61,17 @@ export default async function routes(app: express.Application, server: Server) {
       // (req, res) => res.redirect('/profile'));
       (req, res) => res.json({ success: true }));
   }
+
+  // Token Validation Routes
+  // Confirm Email with Token
+  app.get('/validate/email/:token', asyncRoute(async (req, res, next) => {
+    const { token } = req.params;
+    try {
+      const redeem = await models.UserIdentity.validateWithToken(token);
+      if (redeem) res.json({ redeem });
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
+  }));
 }

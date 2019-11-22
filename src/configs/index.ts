@@ -14,7 +14,6 @@ import { asyncForEach, jsonTryParse } from '../utilities';
 import { getServerUrl } from './utilities.config';
 
 dotenv.config();
-// const { asyncForEach, jsonTryParse } = utilities;
 
 /*
  * Interfaces

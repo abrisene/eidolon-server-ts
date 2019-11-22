@@ -24,7 +24,7 @@ export interface IToken extends Document {
   tsRedeemed: Date[];
   tsCreated: Date;
   tsUpdated: Date;
-  redeem: () => Promise<IToken>;
+  redeem: (save: boolean, session?: any) => Promise<boolean>;
 }
 
 /*
@@ -75,7 +75,7 @@ schema.index(
  * Redeems a token if it has uses remaining and hasn't expired.
  * @param session The session to be used for the redemption transaction.
  */
-schema.methods.redeem = async function(session?: any): Promise<IToken> {
+schema.methods.redeem = async function(save: boolean = true, session?: any): Promise<boolean> {
   try {
     const ts = Date.now();
     if (this.uses <= 0) throw new Error(`Token ${this.token} has no uses remaining`);
@@ -83,7 +83,8 @@ schema.methods.redeem = async function(session?: any): Promise<IToken> {
     if (this.tsRedeemed === undefined) this.tsRedeemed = [];
     this.tsRedeemed.push(ts);
     this.uses -= 1;
-    return this.save({ session });
+    if (save) await this.save({ session });
+    return true;
   } catch (err) {
     if (session) session.abortTransaction();
     return err;

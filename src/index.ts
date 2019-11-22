@@ -10,6 +10,11 @@
 import Configs from './configs';
 import Server from './Server';
 import * as models from './models';
+import * as services from './services';
+import * as utils from './utilities';
+import * as routes from './routes';
+
+const { default: _, ...middleware } = routes;
 
 async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;
@@ -22,6 +27,9 @@ async function init(useServer = true): Promise<object> {
     Configs,
     server,
     models,
+    services,
+    utils,
+    middleware,
   };
 }
 
@@ -33,6 +41,9 @@ module.exports = {
   Configs,
   init,
   models,
+  services,
+  utils,
+  middleware,
   // constants,
   // modules,
 };

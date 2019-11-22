@@ -37,6 +37,9 @@ export interface IEidolonRouteFunction {
  * Module Exports
  */
 
+export * from './middleware.common';
+export * from './middleware.auth';
+
 export default async function(app: express.Application, server: Server) {
   const { appName, env } = Configs.getConfig('environment');
   const { corsUrls } = Configs.getConfig('server');

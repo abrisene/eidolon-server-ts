@@ -10,6 +10,7 @@
 import { gql } from 'apollo-server-express';
 import { IResolvers, IResolverObject } from 'graphql-tools';
 import passport from 'passport';
+import { NextFunction, Request, Response } from 'express';
 import { ILoginResponse, IUser } from '../../models';
 
 /*
@@ -31,10 +32,11 @@ const USE_HTTPS = true;
  * @param req An express request.
  * @param res An express response.
  */
-function authSocial(provider: string, req: Express.Request, res: Express.Response): Promise<any> {
+function authSocial(provider: string, req: Request, res: Response): Promise<any> {
   return new Promise((resolve, reject) => {
     passport.authenticate([provider], { session: false }, (err, user, info) => {
       if (err) reject(err);
+      console.log(info);
       resolve({ user, info });
     })(req, res);
   });
