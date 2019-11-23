@@ -30,23 +30,23 @@ export default async function auth() {
   const jwtStrategy = await authJwt();
   const localStrategy = await authLocal();
 
-  const googleStrategy = await authGoogle();
-  // const googleTokenStrategy = await authGoogleToken();
-  const facebookStrategy = await authFacebook();
-  // const facebookTokenStrategy = await authFacebookToken();
+  passport.use(jwtStrategy);
+  passport.use(localStrategy);
+
   // const twitterStrategy = await authTwitter;
   // const linkedInStrategy = await authLinkedIn;
   // const pinterestStrategy = await authPinterest;
 
-  passport.use(jwtStrategy);
-  passport.use(localStrategy);
-
-  if (Configs.getConfig('google').clientID) {
+  if (Configs.getConfig('google')?.clientID) {
+    // const googleTokenStrategy = await authGoogleToken();
+    const googleStrategy = await authGoogle();
     passport.use(googleStrategy);
     // passport.use(googleTokenStrategy);
   }
 
-  if (Configs.getConfig('facebook').clientID) {
+  if (Configs.getConfig('facebook')?.clientID) {
+    // const facebookTokenStrategy = await authFacebookToken();
+    const facebookStrategy = await authFacebook();
     passport.use(facebookStrategy);
     // passport.use(facebookTokenStrategy);
   }

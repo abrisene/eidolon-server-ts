@@ -33,7 +33,7 @@ export default async function routes(app: express.Application, server: Server) {
   // Social Login Routes
 
   // Facebook Authentication Routes
-  if (facebook.clientID) {
+  if (facebook?.clientID) {
     app.get(
       '/auth/facebook',
       passport.authenticate(['facebook'], { session: false, failureRedirect: '/login', scope: facebook.profileFields }),
@@ -48,7 +48,7 @@ export default async function routes(app: express.Application, server: Server) {
   }
 
   // Google Authentication Routes
-  if (google.clientID) {
+  if (google?.clientID) {
     app.get(
       '/auth/google',
       passport.authenticate(['google'], { session: false, failureRedirect: '/login', scope: google.profileFields }),
