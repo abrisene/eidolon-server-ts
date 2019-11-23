@@ -10,7 +10,7 @@
 import mongoose, { Document, Model, Query, Schema } from 'mongoose';
 import { stitchMongooseSchema } from '../../utilities';
 import identityMethods from './methods.user.identity';
-import authenticationMethods, { ILoginResponse } from './methods.user.authentication';
+import authenticationMethods, { ILoginResponse, IValidationResponse } from './methods.user.authentication';
 
 import { IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
@@ -38,8 +38,8 @@ export interface IUser extends Document {
 }
 
 export interface IUserModel extends Model<IUser> {
-  // requestPasswordReset: (email: string) => Promise<IToken>;
-  setPasswordWithToken: (tokenHash: string, password: string) => Promise<IUser>;
+  requestPasswordReset: (email: string) => Promise<IValidationResponse>;
+  setPasswordWithToken: (tokenHash: string, password: string) => Promise<IValidationResponse>;
   authenticateEmail: (email: string, password: string, register?: boolean) => Promise<ILoginResponse>;
   registerEmail: (email: string, password: string) => Promise<ILoginResponse>;
   authenticateSocial: (type: string, profile: ISocialProfile, register?: boolean) => Promise<ILoginResponse>;

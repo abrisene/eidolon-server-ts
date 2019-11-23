@@ -9,11 +9,12 @@
 
 import Configs from '../../configs';
 import { sendPasswordResetEmail, sendValidationEmail } from './mail.user';
-import { ISchemaFragment } from '../../utilities/utilities.mongoose';
+import { asyncForEach, ISchemaFragment } from '../../utilities';
 import { IUser } from './model.user.schema';
 import { constants as identityConstants, IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
 import { ISocialProfile } from '../../passport/auth.social';
+import { ClientSession } from 'mongoose';
 
 /*
  * Constants
@@ -24,6 +25,12 @@ export interface ILoginResponse {
   jwt?: string;
   err?: Error;
   info?: any;
+}
+
+export interface IValidationResponse {
+  success: boolean;
+  msg?: string;
+  err?: Error;
 }
 
 /*
@@ -109,9 +116,13 @@ schema.methods.login = async function(identity: IUserIdentity): Promise<ILoginRe
     // Start the session and the transaction.
     session = await this.db.startSession();
     session.startTransaction();
+
+    // Update the login and access dates.
     const ts = new Date();
     this.tsLogin.push(ts);
     identity.tsAccessed.push(ts);
+
+    // Save and commit the transaction.
     await this.save({ session });
     await identity.save({ session });
     session.commitTransaction();
@@ -151,7 +162,6 @@ schema.methods.loginPassword = async function(password: string, identity: IUserI
  */
 schema.methods.loginSocial = async function(profile: ISocialProfile, identity: IUserIdentity): Promise<ILoginResponse> {
   try {
-    console.log('Authenticated (Social)');
 
     // Check for Profile / Identity Updates here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -167,39 +177,48 @@ schema.methods.loginSocial = async function(profile: ISocialProfile, identity: I
 
 /**
  * Uses a limited use token to change a user's password. (UNTESTED)
- * TODO: TEST THIS METHOD
+ * TODO: TEST THIS METHOD - NEEDS BETTER ERROR/RESPONSE HANDLING
  * @param tokenHash The hash of the token to be redeemed.
  * @param password The new password to be set on the user.
  */
-schema.statics.setPasswordWithToken = async function(tokenHash: string, password: string): Promise<IUser> {
-  const User = this;
+schema.statics.setPasswordWithToken = async function(tokenHash: string, password: string): Promise<IValidationResponse> {
+  const UserIdentity = this.db.model('User Identity');
   const Token = this.db.model('Token');
   let session;
   try {
-    // Start the session
-    session = await this.db.startSession();
 
     // Find the token and the identity.
-    let token = await Token.findOne({ token: tokenHash }).populate('owner');
-    if (!token) throw new Error(`Could not find token ${tokenHash}.`);
-    if (token.type !== constants.token.resetPassword) throw new Error(`Token ${token} (${token.type}) cannot be used to reset password.`);
-    if (!token.owner) throw new Error(`Could not find identity for token ${token}.`);
+    let token = await Token.findOne({ token: tokenHash });
+    if (!token) throw new Error(`Cannot reset password: Could not find token ${tokenHash}.`);
+    if (token.type !== constants.token.resetPassword) throw new Error(`Cannot reset password: Token ${token} (${token.type}) cannot be used to reset password.`);
+
+    // Find the identity associated with the token.
+    const identity = await UserIdentity.findById(token.owner).populate('owner');
+    if (!identity) throw new Error(`Cannot reset password: Could not find Identity for token ${token}.`);
 
     // Find the user.
-    let user = await User.findOne({ _id: token.owner.owner });
-    if (!user) throw new Error(`Could not find User for token ${token}.`);
+    let user = identity.owner;
+    if (!user) throw new Error(`Cannot reset password: Could not find User for token ${token}.`);
 
-    // Start the transaction, redeem the token and set the password.
+    // Start the session and the transaction.
+    session = await this.db.startSession();
     session.startTransaction();
-    user.hash = await generatePasswordHash(password);
-    token = await token.redeem(session);
+
+    // Generate the hash and redeem the token.
+    const hash = await generatePasswordHash(password);
+    user.hash.push(hash);
+    const redeem = await token.redeem(false);
+    if (!redeem.success) throw new Error(`Cannot reset password: ${redeem.msg}`);
+
+    // Save and commit the transaction.
     user = await user.save({ session });
+    token = await token.save({ session });
     session.commitTransaction();
 
-    return user;
+    return { success: true, msg: 'Password reset successful.' };
   } catch (err) {
     if (session) session.abortTransaction();
-    return err;
+    return { success: false, err, msg: err.message };
   }
 };
 
@@ -207,13 +226,49 @@ schema.statics.setPasswordWithToken = async function(tokenHash: string, password
 
 /**
  * Sends a password reset email to the indicated email address.
- * TODO: Write this method.
  * @param email The email address to send the password reset request to.
  */
-/*
-schema.statics.requestPasswordReset = async function(email: string): IToken {
-  const Identity = this.db.model('Identity');
-};*/
+schema.statics.requestPasswordReset = async function(email: string): Promise<IValidationResponse> {
+  const Identity = this.db.model('User Identity');
+  const Token = this.db.model('Token');
+  let session: ClientSession;
+  try {
+    // Find out if there's a valid identity attached to this email.
+    const identity = await Identity.findOne({ emails: email }).populate('owner');
+    if (!identity) throw new Error(`Cannot request password reset: Identity not found for email: "${email}"`);
+
+    // TODO: RATE LIMIT THIS ACTION.
+
+    // Start the session
+    session = await this.db.startSession();
+    session.startTransaction();
+
+    // Generate the token.
+    const token = await identity.generateToken(constants.token.resetPassword);
+    if (!token) throw new Error('Cannot request password reset: Could not generate Token.');
+
+    // Invalidate existing password reset tokens.
+    const tokens = await Token.find({ owner: identity._id, type: constants.token.resetPassword });
+    await asyncForEach(tokens, async (t: IToken) => {
+      t.uses = 0;
+      await t.save({ session });
+    });
+
+    // Save the token.
+    await token.save({ session });
+
+    // Generate the reset email.
+    await sendPasswordResetEmail(identity.emailPrimary, token.token);
+
+    // Commit the session.
+    await session.commitTransaction();
+
+    return { success: true, msg: 'Password reset request successful.' };
+  } catch (err) {
+    if (session) session.abortTransaction();
+    return { success: false, err, msg: err.message };
+  }
+};
 
 /**
  * Authenticates a login or a registration with an email and password. Returns a JWT if successful.
@@ -235,13 +290,12 @@ schema.statics.authenticateEmail = async function(email: string, password: strin
       throw new Error(`Identity not found for Email: ${email}`);
     }
   } catch (err) {
-    console.log(err);
     return err;
   }
 };
 
 /**
- * Registers a new user using an email address. (MAJOR TODO)
+ * Registers a new user using an email address.
  * @param email The email address to be used for registration.
  * @param password The password in plain text to be used for registration.
  */
@@ -290,14 +344,13 @@ schema.statics.registerEmail = async function(email: string, password: string): 
     token = await token.save({ session });
 
     // Send out the identity verification email.
-    const msg = await sendValidationEmail(email, token.token);
+    await sendValidationEmail(email, token.token);
 
     await session.commitTransaction();
 
     // Login with the password and generate the JWT.
     return user.loginPassword(password, identity);
   } catch (err) {
-    console.log(err);
     if (session) session.abortTransaction();
     return err;
   }
@@ -408,7 +461,6 @@ schema.statics.registerSocial = async function(type: string, profile: ISocialPro
     // Login with the social identity and generate the JWT.
     return user.loginSocial(profile, socialIdentity);
   } catch (err) {
-    console.log(err);
     if (session) session.abortTransaction();
     return err;
   }

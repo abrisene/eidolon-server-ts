@@ -54,7 +54,7 @@ function generateValidationEmail(to: string[]|string, token: string): IEmail {
  * @param token An password reset token id to be sent with the email.
  */
 function generatePasswordResetEmail(to: string[]|string, token: string): IEmail {
-  const { appName } = Configs.getConfig('server');
+  const { appName } = Configs.getConfig('environment');
   const { client } = Configs.getConfig('uris');
   const generator = getEmailGenerator();
 

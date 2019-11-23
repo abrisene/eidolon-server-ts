@@ -68,10 +68,10 @@ export default async function routes(app: express.Application, server: Server) {
     const { token } = req.params;
     try {
       const redeem = await models.UserIdentity.validateWithToken(token);
-      if (redeem) res.json({ redeem });
+      if (!redeem.success) throw new Error(redeem.msg);
+      res.json(redeem);
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      res.json(err.message);
     }
   }));
 }

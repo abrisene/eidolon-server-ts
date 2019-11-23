@@ -9,6 +9,7 @@
 
 import mongoose, { Document, Model, Schema } from 'mongoose';
 import { IToken } from '../model.authentication/model.token';
+import { IValidationResponse } from './methods.user.authentication';
 
 /*
  * Interface
@@ -29,7 +30,7 @@ export interface IUserIdentity extends Document {
 }
 
 export interface IUserIdentityModel extends Model<IUserIdentity> {
-  validateWithToken: (hash: string) => Promise<boolean>;
+  validateWithToken: (hash: string) => Promise<IValidationResponse>;
 }
 /*
  * Constants
@@ -90,24 +91,26 @@ schema.methods.generateToken = function(type: string, duration: number = 86400):
  * Saves both the Identity and Token documents.
  * @param hash A hash matching the validation token's hash.
  */
-schema.statics.validateWithToken = async function(hash: string): Promise<boolean> {
+schema.statics.validateWithToken = async function(hash: string): Promise<IValidationResponse> {
   const Identity = this;
   const Token = this.db.model('Token');
   const { validateIdentity } = constants.token;
   let session;
   try {
     const token: IToken = await Token.findOne({ token: hash });
-    if (!token) throw new Error(`Could not find token ${hash}.`);
+    if (!token) throw new Error(`Cannot validate Identity: Could not find token ${hash}.`);
     if (token.type !== validateIdentity) throw new Error(`Token ${token} (${token.type}) cannot be used to validate identity.`);
 
     const identity = await Identity.findOne({ _id: token.owner });
-    if (!identity) throw new Error(`Could not find identity for token ${token}.`);
+    if (!identity) throw new Error(`Cannot validate Identity: Could not find identity for token ${token}.`);
 
     // Start the session and the transaction.
     session = await this.db.startSession();
     session.startTransaction();
 
-    const redeemed = await token.redeem(false);
+    // Redeem the token.
+    const redeem = await token.redeem(false);
+    if (!redeem.success) throw new Error(`Cannot validate Identity: ${redeem.msg}`);
     identity.tsValidated = token.tsRedeemed[token.tsRedeemed.length - 1];
 
     // Save and commit the transaction.
@@ -115,10 +118,10 @@ schema.statics.validateWithToken = async function(hash: string): Promise<boolean
     await token.save({ session });
     session.commitTransaction();
 
-    return redeemed;
+    return { success: true, msg: 'Identity validated successfully.' };
   } catch (err) {
     if (session) session.abortTransaction();
-    return err;
+    return { success: false, err, msg: err.message };
   }
 };
 

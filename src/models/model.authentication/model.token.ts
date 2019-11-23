@@ -9,6 +9,7 @@
 
 import mongoose, { Document, Schema } from 'mongoose';
 import crypto from 'crypto';
+import { IValidationResponse } from '../model.user/methods.user.authentication';
 
 /*
  * Interface
@@ -24,7 +25,7 @@ export interface IToken extends Document {
   tsRedeemed: Date[];
   tsCreated: Date;
   tsUpdated: Date;
-  redeem: (save: boolean, session?: any) => Promise<boolean>;
+  redeem: (save: boolean, session?: any) => Promise<IValidationResponse>;
 }
 
 /*
@@ -77,7 +78,7 @@ schema.index(
  *             If you're using a session you probably want to handle this manually.
  * @param session The session to be used for the redemption transaction.
  */
-schema.methods.redeem = async function(save: boolean = true, session?: any): Promise<boolean> {
+schema.methods.redeem = async function(save: boolean = true, session?: any): Promise<IValidationResponse> {
   try {
     const ts = Date.now();
     if (this.uses <= 0) throw new Error(`Token ${this.token} has no uses remaining`);
@@ -86,10 +87,10 @@ schema.methods.redeem = async function(save: boolean = true, session?: any): Pro
     this.tsRedeemed.push(ts);
     this.uses -= 1;
     if (save) await this.save({ session });
-    return true;
+    return { success: true, msg: 'Successfully redeemed token.' };
   } catch (err) {
     if (session) session.abortTransaction();
-    return err;
+    return { success: false, err, msg: err.message };
   }
 };
 

@@ -93,13 +93,18 @@ export const schema = gql`
     tsUpdated: Float!
   }
 
+  type ValidationResponse {
+    success: Boolean
+    msg: String
+  }
+
   extend type Mutation {
     authenticateEmail(input: AuthenticateEmailInput): User!
     authenticateSocial(input: AuthenticateSocialInput): User!
-    validateEmailWithToken(input: TokenInput): Boolean!
-    requestPasswordReset(input: EmailInput): Boolean!
-    setPasswordWithToken(input: SetPasswordWithTokenInput): Boolean!
-    logout: Boolean!
+    validateEmailWithToken(input: TokenInput): ValidationResponse!
+    requestPasswordReset(input: EmailInput): ValidationResponse!
+    setPasswordWithToken(input: SetPasswordWithTokenInput): ValidationResponse!
+    logout: ValidationResponse!
   }
 
   input AuthenticateEmailInput {
@@ -192,7 +197,6 @@ const mutation: IResolverObject = {
       return req.user;
     } catch (err) {
       res.status(401);
-      console.error(err);
       return err;
     }
   },
@@ -200,31 +204,28 @@ const mutation: IResolverObject = {
     const { token } = input;
     try {
       const redeem = await models.UserIdentity.validateWithToken(token);
-      return true;
+      return redeem;
     } catch (err) {
-      console.error(err);
-      return err;
+      return { success: false, msg: err.message };
     }
   },
   requestPasswordReset: async (_, { input }, { models }) => {
     // TODO
     const { email } = input;
     try {
-      // const reset = await models.User.requestPasswordReset(email);
-      return true;
+      const reset = await models.User.requestPasswordReset(email);
+      return reset;
     } catch (err) {
-      console.error(err);
-      return err;
+      return { success: false, msg: err.message };
     }
   },
   setPasswordWithToken: async (_, { input }, { models }) => {
     const { token, password } = input;
     try {
       const redeem = await models.User.setPasswordWithToken(token, password);
-      return true;
+      return redeem;
     } catch (err) {
-      console.error(err);
-      return err;
+      return { success: false, msg: err.message };
     }
   },
   logout: async (_, a, { Configs, res }) => {
