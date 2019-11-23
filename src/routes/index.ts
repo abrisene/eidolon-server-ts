@@ -44,6 +44,8 @@ export default async function(app: express.Application, server: Server) {
   const { appName, env } = Configs.getConfig('environment');
   const { corsUrls } = Configs.getConfig('server');
 
+  console.log(env);
+
   // Express Settings
   app.set('view engine', 'pug');
   app.set('views', path.join(__dirname, '../views'));
@@ -52,7 +54,7 @@ export default async function(app: express.Application, server: Server) {
   // Middleware Configs
   app.use(cors({ origin: corsUrls, credentials: true }));
   app.use('/static', express.static(path.join(__dirname, '../../public')));
-  // if (env === 'production') app.use(logger('combined'));
+  if (env === 'production') app.use(logger('combined'));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.use(cookieParser());
@@ -62,7 +64,7 @@ export default async function(app: express.Application, server: Server) {
 
   // Routes
   await graphQLRoutes(app, server);
-  await authRoutes(app, server);
+  if (Configs.getConfig('mongodb')) await authRoutes(app, server);
 
   return;
 }
