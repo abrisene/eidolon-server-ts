@@ -34,8 +34,8 @@ npm install
 touch .env
 ```
 
-If you wish to use any of the following features, you 
-- [MongoDB](https://cloud.mongodb.com/) with Replica Set (For User Credentials and Transactions)
+If you wish to use any of the following features, you should have the following services configured:
+- [MongoDB](https://cloud.mongodb.com/) with Replica Set (Required for User authentication and Transactions)
 - [Mailgun](https://www.mailgun.com) (For Email Validation & Password Reset)
 - [Facebook App](https://developers.facebook.com/apps/) (For Facebook Login)
 - [Google App](https://console.cloud.google.com/cloud-resource-manager) (For Google Login)
