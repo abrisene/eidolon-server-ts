@@ -15,6 +15,8 @@ import { RedisCache } from 'apollo-server-cache-redis';
 
 import Configs from '../configs';
 import Server from '../Server';
+import * as models from '../models';
+import { authenticate } from './middleware.auth';
 
 /**
  * Module Exports
@@ -27,10 +29,12 @@ export default async function routes(app: express.Application, server: Server) {
 
   // Get the Schema and Resolvers from the Server
   const gqlConfig = server.gqlSchema;
+  const redisHost: string = redisConfig ? redisConfig.url : undefined;
 
   // Set up the Redis Cache for GraphQL if Redis is configured
   let cache;
-  if (redisConfig !== undefined) cache = new RedisCache({ url: redisConfig.url });
+  // if (redisConfig !== undefined) cache = new RedisCache({ url: redisConfig.url });
+  if (redisHost) cache = new RedisCache({ host: redisHost }); // TODO: Test This
 
   // Create the server.
   const gqlServer = new ApolloServer({
@@ -41,8 +45,8 @@ export default async function routes(app: express.Application, server: Server) {
       req,
       res,
       Configs,
-      // user
-      // models
+      user: req.user,
+      models,
     }),
     playground: {
       settings: {
@@ -51,6 +55,8 @@ export default async function routes(app: express.Application, server: Server) {
     },
   });
 
+  // Apply Middleware
+  app.use('/graphql', authenticate.optional);
   gqlServer.applyMiddleware({
     app,
     path: '/graphql',

@@ -9,13 +9,13 @@
 
 import chalk from 'chalk';
 import dotenv from 'dotenv';
-import mailgun from 'mailgun.js';
+// import mailgun from 'mailgun-js';
+import { NodeMailgun } from 'ts-mailgun';
 
-import utilities from '../utilities';
+import { exists, jsonTryParse } from '../utilities';
 import Configs from './index';
 
 dotenv.config();
-const { jsonTryParse, exists } = utilities;
 
 /*
  * Constants
@@ -39,7 +39,12 @@ export default async function configure() {
   const { secretKey, publicKey, domain } = envConfig;
 
   try {
-    const client = mailgun.client({ username: 'api', key: secretKey, domain });
+    // const client = mailgun({ apiKey: secretKey, domain });
+    const client = new NodeMailgun(secretKey, domain);
+    client.fromEmail = `noreply@${domain}`;
+    client.fromTitle = `noreply@${domain}`;
+    client.init();
+
     const config = { secretKey, publicKey, domain, client };
     Configs.emit('mailgun initialized');
     console.log(chalk.green.bold('>> Mailgun Initialized <<'));

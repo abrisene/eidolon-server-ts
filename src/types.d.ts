@@ -8,4 +8,4 @@
  */
 
 declare module 'airtable';
-declare module 'mailgun.js';
+declare module 'passport-google-token';

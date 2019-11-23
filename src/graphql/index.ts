@@ -11,8 +11,7 @@ import path from 'path';
 import { DocumentNode } from 'graphql';
 import { IResolvers } from 'graphql-tools';
 import { gql } from 'apollo-server-express';
-import utilities from '../utilities';
-const { importPattern } = utilities;
+import { importPattern } from '../utilities';
 
 /*
  * Interfaces

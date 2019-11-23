@@ -9,14 +9,27 @@
 
 import Configs from './configs';
 import Server from './Server';
+import * as models from './models';
+import * as services from './services';
+import * as utils from './utilities';
+import * as routes from './routes';
+
+const { default: _, ...middleware } = routes;
 
 async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;
   await Configs.init();
-  if (server) await server.serve(9000);
-  // console.log(Configs);
+  const serverConfig = Configs.getConfig('server');
+  const port = serverConfig.port || 8000;
+  if (server) await server.serve(port);
+
   return {
+    Configs,
     server,
+    models,
+    services,
+    utils,
+    middleware,
   };
 }
 
@@ -25,9 +38,12 @@ async function init(useServer = true): Promise<object> {
  */
 
 module.exports = {
+  Configs,
   init,
-  // config,
+  models,
+  services,
+  utils,
+  middleware,
   // constants,
-  // models,
   // modules,
 };
