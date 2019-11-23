@@ -7,6 +7,7 @@ An opinionated Express Server Boilerplate with Scaffolding for the following fea
 **Database**
   - Redis
   - MongoDB / Mongoose
+  - Neo4J
 
 **Routing & Communication**
   - Routing (Express)
@@ -33,10 +34,11 @@ npm install
 touch .env
 ```
 
-- MongoDB (For User Credentials)
-- Mailgun (For Email Validation & Password Reset)
-- Facebook App (For Facebook Login)
-- Google App (For Google Login)
+If you wish to use any of the following features, you 
+- [MongoDB](https://cloud.mongodb.com/) with Replica Set (For User Credentials and Transactions)
+- [Mailgun](https://www.mailgun.com) (For Email Validation & Password Reset)
+- [Facebook App](https://developers.facebook.com/apps/) (For Facebook Login)
+- [Google App](https://console.cloud.google.com/cloud-resource-manager) (For Google Login)
 
 ### Run
 
@@ -71,37 +73,68 @@ main();
 
 ### Environment Variables
 
-Webpack looks for the environment variables below in an .env file in the app's root directory:
+Eidolon looks for the environment variables below in an .env file in the app's root directory. Defaults are provided where possible.
 
 #### Basics
 
 ```
 APP_NAME          // A String, displayed in Emails.
 PORT              // Port for the http Server, Passed to Express.
+HTTPS             // Defines whether or not https should be used - SHOULD BE SET FALSE UNTIL HTTPS SUPPORT IS ADDED.
 
+```
+
+#### Urls
+
+```
+HOSTNAME          // The hostname of the server. This will default to 'localhost:<PORT>' if not defined.
+SERVER_URL        // The URL of the server. This will override the effects of setting the hostname - only one or the other should be used.
 CLIENT_URL        // The URL of the client, used for CORS and for emails.
 CORS_URLS         // An array of additional URLS which should be enabled for CORS. Will enable CORS universally if set to '*'
-LOGO_URL          // The URL of the app's logo.
+LOGO_URL          // The URL of the app's logo. This will be used in emails sent to users.
+
 ```
 
 #### Databases
 
 ```
-MONGODB {         // An optional JSON object containing redis credentials.
-  "url"           // URL of the mongoDB database.
-}
-
 MONGODB_URL       // A URL to a mongoDB database.
-MONGODB_URI       // A URL to a mongoDB database.
 PROD_MONGODB      // A URL to a mongoDB database. This value is populated by Heroku's Mongo Lab addon.
-
-REDIS {           // An optional JSON object containing redis credentials.
-  "url"           // URL of the redis instance.
-  "password"      // An optional password for the redis instance.
-}
 
 REDIS_URL         // A URL to a redis instance. This value is populated by Heroku's Redis addon.
 REDISCLOUD_URL    // A URL to a redis instance. This value is populated by Heroku's Redis Cloud addon.
+
+NEO4J {           // A JSON object containing Neo4J credentials.
+  "url"           // Url of the Neo4J instance.
+  "username"      // Database username.
+  "password"      // Database password.
+}
+
+```
+#### Authentication
+
+```
+JWT_SECRET        // JWT Secret. **THIS SHOULD NOT BE SHARED EVER**
+JWT_ISSUER        // Optional Issuer property for JWT. Defaults to hostname.
+JWT_AUDIENCE      // Optional Audience property for JWT. Defaults to hostname.
+
+GOOGLE_AUTH {
+  "clientID"      // Your app id.
+  "clientSecret"  // Your app's secret key.
+  "callbackURL"   // Optional callback URL. This will default to <HOSTNAME>/auth/google/redirect
+}
+
+FACEBOOK_AUTH {
+  "clientID"      // Your app id.
+  "clientSecret"  // Your app's secret key.
+  "callbackURL"   // Optional callback URL. This will default to <HOSTNAME>/auth/facebook/redirect
+}
+
+TWITTER_AUTH {}   // Not yet supported.
+
+LINKEDIN_AUTH {}  // Not yet supported.
+
+PINTEREST_AUTH {} // Not yet supported.
 
 ```
 
@@ -115,28 +148,29 @@ PUBNUB {          // A JSON object containing PubNub credentials.
 }
 
 ABLY {            // A JSON object containing Ably credentials
-  "serverKey"     // The Ably API key to use on the server
-  "clientKey"     // The Ably API key to use on the client
+  "secretKey"     // The Ably API key to use on the server
+  "publicKey"     // The Ably API key to use on the client
 }
+
 ```
 
 #### Messaging
 
 ```
 MAILGUN {         // A JSON object containing Mailgun credentials. Authentication relies on this.
-  "key"           // The Mailgun API key.
-  "pubkey"        // An optional Public Key
+  "secretKey"     // The Mailgun API key.
+  "publicKey"     // An optional Public Key
   "domain"        // The Domain mail will be sent from.
 }
 
 TWILIO {          // An optional JSON object containing Twilio credentials.
   "account"       // The Twilio account ID.
-  "key"           // The Twilio account's key.
+  "secretKey"     // The Twilio account's key.
 }
+
 ```
 
 #### Payments
-
 
 ```
 STRIPE {          // An optional JSON object containing Stripe credentials.
@@ -144,34 +178,13 @@ STRIPE {          // An optional JSON object containing Stripe credentials.
   "publicKey"     // The account's Public Key.
 }
 
-PAYPAL {}         // Not yet supported.
-
-SQUARE {}         // Not yet supported.
 ```
 
-#### Authentication
+#### Spreadsheets
 
 ```
-JWT_SECRET        // JWT Secret. **THIS SHOULD NOT BE SHARED EVER**
-JWT_ISSUER        // Optional Issuer property for JWT. Defaults to hostname.
-JWT_AUDIENCE      // Optional Audience property for JWT. Defaults to hostname.
-
-GOOGLE_AUTH {
-  "clientID"
-  "clientSecret"
-  "callbackURL"   // Optional callback URL. This will default to <HOSTNAME>/auth/google/redirect
+AIRTABLE {
+  "secretKey"     // Secret key for an Airtable Base.
 }
 
-FACEBOOK_AUTH {
-  "clientID"
-  "clientSecret"
-  "callbackURL"   // Optional callback URL. This will default to <HOSTNAME>/auth/facebook/redirect
-}
-
-TWITTER_AUTH {}   // Not yet supported.
-
-LINKEDIN_AUTH {}  // Not yet supported.
-
-PINTEREST_AUTH {} // Not yet supported.
 ```
-

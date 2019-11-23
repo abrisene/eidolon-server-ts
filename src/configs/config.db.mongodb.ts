@@ -27,7 +27,7 @@ export const category = 'database';
  */
 
 export default async function configure() {
-  const url = process.env.MONGODB_URL;
+  const url = process.env.MONGODB_URL || process.env.PROD_MONGODB;
   if (!url) return undefined;
 
   mongoose.set('useCreateIndex', true);
