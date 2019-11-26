@@ -13,7 +13,7 @@ import { asyncForEach, ISchemaFragment } from '../../utilities';
 import { IUser } from './model.user.schema';
 import { constants as identityConstants, IUserIdentity } from './model.user.identity';
 import { IToken } from '../model.authentication/model.token';
-import { ISocialProfile } from '../../passport/auth.social';
+// import { ISocialProfile } from '../../passport/auth.social';
 import { ClientSession } from 'mongoose';
 
 /*
@@ -31,6 +31,15 @@ export interface IValidationResponse {
   success: boolean;
   msg?: string;
   err?: Error;
+}
+
+export interface ISocialProfile {
+  id: string;
+  email: string;
+  emails: string[];
+  displayName?: string;
+  gender?: string;
+  metadata?: object;
 }
 
 /*

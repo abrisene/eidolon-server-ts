@@ -7,22 +7,20 @@
  * Module Dependencies
  */
 
-import path from 'path';
-import express from 'express';
-import { ApolloServer, IResolvers } from 'apollo-server-express';
-import { DocumentNode } from 'graphql';
+import Koa from 'koa'; // koa@2
+import { ApolloServer, IResolvers } from 'apollo-server-koa';
 import { RedisCache } from 'apollo-server-cache-redis';
 
 import Configs from '../configs';
 import Server from '../Server';
 import * as models from '../models';
-import { authenticate } from './middleware.auth';
+// import { authenticate } from './middleware.auth';
 
 /**
  * Module Exports
  */
 
-export default async function routes(app: express.Application, server: Server) {
+export default async function routes(app: Koa, server: Server) {
   // Get Configuration Variables
   const { corsUrls } = Configs.getConfig('server');
   const redisConfig = Configs.getConfig('redis');
@@ -42,10 +40,10 @@ export default async function routes(app: express.Application, server: Server) {
     resolvers: gqlConfig.resolvers,
     cache,
     context: async ({ req, res }) => ({
-      req,
-      res,
+      // req,
+      // res,
       Configs,
-      user: req.user,
+      // user: req.user,
       models,
     }),
     playground: {
@@ -56,7 +54,7 @@ export default async function routes(app: express.Application, server: Server) {
   });
 
   // Apply Middleware
-  app.use('/graphql', authenticate.optional);
+  // app.use('/graphql'/* , authenticate.optional */);
   gqlServer.applyMiddleware({
     app,
     path: '/graphql',

@@ -1,5 +1,6 @@
 {
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "prettier.singleQuote": true,
-  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false
+  "typescript.validate.enable": false,
+  "prettier.singleQuote": true
 }

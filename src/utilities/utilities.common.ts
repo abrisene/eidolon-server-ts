@@ -80,10 +80,9 @@ export async function importPattern(
  * @param string  String to be parsed.
  * @return        Returns JSON or undefined.
  */
-export function jsonTryParse(string: string): IEnvConfig|undefined {
+export function jsonTryParse(string?: string): IEnvConfig|undefined {
   try {
-    const json = JSON.parse(string);
-    return json;
+    return string ? JSON.parse(string) : undefined;
   } catch (err) {
     return undefined;
   }
