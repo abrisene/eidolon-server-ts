@@ -9,6 +9,7 @@
 
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { Request } from 'express';
+import { Context } from 'koa';
 
 import Configs from '../configs';
 import { User } from '../models';
@@ -18,11 +19,11 @@ import { User } from '../models';
  */
 
 const extractors = [
-  // Note, this will fail if https is not enabled. Cookie is signed with secure.
-  (req: Request) => {
+  // Note, this will fail if https is not enabled if cookie is signed with secure.
+  (ctx: any) => {
     let jwt;
-    if (req !== undefined && req.cookies !== undefined) {
-      jwt = req.cookies.jwt || req.cookies.bearer;
+    if (ctx.cookies !== undefined) {
+      jwt = ctx.cookies.get('jwt') || ctx.cookies.get('bearer');
     }
     return jwt;
   },
@@ -40,8 +41,10 @@ export default async function() {
   const { secretKey, issuer, audience } = Configs.getConfig('jwt');
   const options: StrategyOptions = {
     secretOrKey: secretKey,
-    issuer, audience,
+    issuer,
+    audience,
     jwtFromRequest: ExtractJwt.fromExtractors(extractors),
+    // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Need to figure out how to set this properly.
   };
   return new Strategy(options, async (payload, done) => {
     try {

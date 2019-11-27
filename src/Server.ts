@@ -9,7 +9,8 @@
 
 import { Server } from 'http';
 import EventEmitter from 'events';
-import express from 'express';
+// import express from 'express';
+import Koa from 'koa';
 import socketIO from 'socket.io';
 import chalk from 'chalk';
 import Configs from './configs';
@@ -28,7 +29,7 @@ import { importGraphQLConfig, importSchema, IGraphQLConfig } from './graphql';
  * @param app  An express app to listen on.
  * @param port The port that the express app should listen on.
  */
-async function asyncListen(app: express.Application, port: number): Promise<Server> {
+async function asyncListen(app: Koa, port: number): Promise<Server> {
   return new Promise((resolve, reject) => {
     const server = app.listen(port, () => {
       resolve(server);
@@ -41,14 +42,14 @@ async function asyncListen(app: express.Application, port: number): Promise<Serv
  */
 
 export default class EidolonServer extends EventEmitter {
-  protected _app: express.Application;
-  protected _server: Server;
-  protected _io: socketIO.Server;
+  protected _app: Koa;
+  protected _server?: Server;
+  protected _io?: socketIO.Server;
   protected _status: string;
-  protected _gqlSchema: IGraphQLConfig;
+  protected _gqlSchema?: IGraphQLConfig;
   constructor() {
     super();
-    this._app = express();
+    this._app = new Koa();
     this._server = undefined;
     this._io = undefined;
     this._status = 'inactive';
@@ -92,7 +93,7 @@ export default class EidolonServer extends EventEmitter {
    * Registers a new set of routes with the server.
    * @param routeFn An async function containing route handlers.
    */
-  public async registerRoute(routeFn: (app: express.Application, server: EidolonServer) => void) {
+  public async registerRoute(routeFn: (app: Koa, server: EidolonServer) => void) {
     await routeFn(this._app, this);
     return;
   }

@@ -9,9 +9,9 @@
 
 import { gql } from 'apollo-server-express';
 import { IResolvers, IResolverObject } from 'graphql-tools';
+import { Context } from 'koa';
 import passport from 'passport';
-import { NextFunction, Request, Response } from 'express';
-import { ILoginResponse, IUser } from '../../models';
+import { IUser } from '../../models';
 
 /*
  * Constants
@@ -29,17 +29,29 @@ const USE_HTTPS = true;
 /**
  * Uses passport to authenticate a User.
  * @param provider A string indicating which provider to use for the authentication.
- * @param req An express request.
- * @param res An express response.
+ * @param ctx A Koa Context
  */
-function authSocial(provider: string, req: Request, res: Response): Promise<any> {
+function authSocial(provider: string, ctx: Context): Promise<any> {
   return new Promise((resolve, reject) => {
     passport.authenticate([provider], { session: false }, (err, user, info) => {
       if (err) reject(err);
       console.log(info);
       resolve({ user, info });
-    })(req, res);
+    })(ctx);
   });
+}
+
+/**
+ * Sets the context's user and attaches the jwt to a cookie.
+ * @param ctx A Koa Context
+ * @param user A user, will be attached to the context's state.
+ * @param jwt The Json Web Token to use for authentication.
+ * @param https Whether or not to use https.
+ */
+function login(ctx: Context, user: IUser, jwt: string, useHttps: boolean): IUser {
+  ctx.state.user = user;
+  ctx.cookies.set('jwt', jwt, { httpOnly: true, secure: useHttps });
+  return user;
 }
 
 /**
@@ -163,25 +175,21 @@ const identityResolvers: IResolverObject = {
 };
 
 const mutation: IResolverObject = {
-  authenticateEmail: async (_, { input }, { Configs, models, req, res }) => {
+  authenticateEmail: async (_, { input }, { Configs, models, ctx }) => {
     const { email, password, register } = input;
     try {
       const { useHttps } = Configs.getConfig('server');
-      const auth = await models.User.authenticateEmail(
-        email,
-        password,
-        register,
-      );
+      const auth = await models.User.authenticateEmail(email, password, register);
       if (auth.err) throw new Error(auth.err);
-      req.user = auth.user;
-      res.cookie('jwt', auth.jwt, { httpOnly: true, secure: useHttps });
-      return req.user;
+      login(ctx, auth.user, auth.jwt, useHttps);
+      return ctx.state.user;
     } catch (err) {
-      res.status(401);
+      console.log(err);
+      ctx.throw(401, err);
       return err;
     }
   },
-  authenticateSocial: async (_, { input }, { Configs, req, res }) => {
+  authenticateSocial: async (_, { input }, { Configs, ctx, req }) => {
     const { provider, accessToken, refreshToken } = input;
     try {
       const { useHttps } = Configs.getConfig('server');
@@ -190,13 +198,12 @@ const mutation: IResolverObject = {
         access_token: accessToken,
         refresh_token: refreshToken,
       };
-      const auth = await authSocial(provider, req, res);
+      const auth = await authSocial(provider, ctx);
       if (auth.err) throw new Error(auth.err);
-      req.user = auth.user;
-      res.cookie('jwt', auth.jwt, { httpOnly: true, secure: useHttps });
-      return req.user;
+      login(ctx, auth.user, auth.jwt, useHttps);
+      return ctx.state.user;
     } catch (err) {
-      res.status(401);
+      ctx.throw(401, err);
       return err;
     }
   },
@@ -210,7 +217,6 @@ const mutation: IResolverObject = {
     }
   },
   requestPasswordReset: async (_, { input }, { models }) => {
-    // TODO
     const { email } = input;
     try {
       const reset = await models.User.requestPasswordReset(email);
@@ -228,9 +234,9 @@ const mutation: IResolverObject = {
       return { success: false, msg: err.message };
     }
   },
-  logout: async (_, a, { Configs, res }) => {
+  logout: async (_, a, { Configs, ctx }) => {
     const { useHttps } = Configs.getConfig('server');
-    res.cookie('jwt', '', { httpOnly: true, secure: useHttps });
+    ctx.cookies.set('jwt', '', { httpOnly: true, secure: useHttps });
     return true;
   },
 };

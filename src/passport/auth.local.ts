@@ -32,7 +32,6 @@ export default async function() {
   return new Strategy(options, async (email, password, done) => {
     try {
       const result = await User.authenticateEmail(email, password);
-      console.log('LOCAL');
       return done(null, result);
     } catch (err) {
       return done(err, false);
