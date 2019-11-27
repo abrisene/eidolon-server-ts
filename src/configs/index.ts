@@ -43,7 +43,7 @@ interface IConfigManifest {
  * Module Exports
  */
 
-class Config extends EventEmitter {
+export class Config extends EventEmitter {
   protected _status: string;
   protected _manifest: IConfigManifest;
   protected _configs: IConfigStore;

@@ -7,53 +7,22 @@
  * Module Dependencies
  */
 
-import Koa from 'koa'; // koa@2
-import { ApolloServer, IResolvers } from 'apollo-server-koa';
+import path from 'path';
+import express from 'express';
+import { ApolloServer, IResolvers } from 'apollo-server-express';
+import { DocumentNode } from 'graphql';
 import { RedisCache } from 'apollo-server-cache-redis';
 
-import Configs, { Config } from '../configs';
+import Configs from '../configs';
 import Server from '../Server';
 import * as models from '../models';
-import { IConfig } from '../utilities';
-// import { authenticate } from './middleware.auth';
-
-/**
- * Interfaces
- */
-
-export interface IGraphQLContext {
-  ctx: Koa.Context;
-  req: Koa.Request;
-  res: Koa.Response;
-  user: any;
-  Configs: Config;
-  models: typeof models;
-}
-
-/**
- * Constants
- */
-
-/**
- * Returns a context for the Apollo Server.
- * @param ctx The Koa Context.
- */
-async function bindContext({ ctx }: { ctx: Koa.Context }): Promise<IGraphQLContext> {
-  return {
-    ctx,
-    req: ctx.request,
-    res: ctx.response,
-    user: ctx.state.user,
-    Configs,
-    models,
-  };
-}
+import { authenticate } from './middleware.auth';
 
 /**
  * Module Exports
  */
 
-export default async function routes(app: Koa,  server: Server) {
+export default async function routes(app: express.Application, server: Server) {
   // Get Configuration Variables
   const { corsUrls } = Configs.getConfig('server');
   const redisConfig = Configs.getConfig('redis');
@@ -72,15 +41,13 @@ export default async function routes(app: Koa,  server: Server) {
     typeDefs: gqlConfig.schema,
     resolvers: gqlConfig.resolvers,
     cache,
-    context: bindContext,
-    /* context: async ({ ctx }: { ctx: Koa.Context }) => ({
-      ctx,
-      req: ctx.request,
-      res: ctx.response,
+    context: async ({ req, res }) => ({
+      req,
+      res,
       Configs,
-      user: ctx.state.user,
+      user: req.user,
       models,
-    }), */
+    }),
     playground: {
       settings: {
         'request.credentials': 'include',
@@ -89,7 +56,7 @@ export default async function routes(app: Koa,  server: Server) {
   });
 
   // Apply Middleware
-  // app.use('/graphql'/* , authenticate.optional */);
+  app.use('/graphql', authenticate.optional);
   gqlServer.applyMiddleware({
     app,
     path: '/graphql',
