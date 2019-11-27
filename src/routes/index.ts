@@ -11,16 +11,11 @@ import path from 'path';
 
 import Koa from 'koa';
 import Router from 'koa-router';
-// import koaRouter from 'koa-router';
 import views from 'koa-views';
 import serve from 'koa-static';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import logger from 'koa-logger';
-// import express, { Application } from 'express';
-// import bodyParser from 'body-parser';
-// import cookieParser from 'cookie-parser';
-// import cors, { CorsOptions } from 'cors';
 // import logger from 'morgan';
 
 import passport from 'koa-passport';
@@ -65,7 +60,6 @@ export default async function(app: Koa, server: Server) {
   // Settings
   app.use(views(path.join(__dirname, '../views'), { extension: 'pug' }));
   app.use(serve(path.join(__dirname, '../../public')));
-  // app.disable('x-powered-by');
 
   // Middleware Configs
   app.use(bodyParser());
