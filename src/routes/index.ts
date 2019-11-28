@@ -16,15 +16,16 @@ import serve from 'koa-static';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import logger from 'koa-logger';
-// import logger from 'morgan';
 
 import passport from 'koa-passport';
 
 import authStrategies from '../passport';
 
+import { injectConfig, renderInjected } from './middleware.common';
 import { authenticate } from './middleware.auth';
 
 import graphQLRoutes from './routes.graphql';
+import commonRoutes from './routes.common';
 import authRoutes from './routes.auth';
 
 import Configs from '../configs';
@@ -44,12 +45,27 @@ export interface IEidolonRouteFunction {
  * Module Exports
  */
 
-// export * from './middleware.common';
-// export * from './middleware.auth';
+export * from './middleware.common';
+export * from './middleware.auth';
 
 export default async function(app: Koa, server: Server) {
   const { appName, env } = Configs.getConfig('environment');
   const { corsUrls } = Configs.getConfig('server');
+  const { host } = Configs.getConfig('uris');
+
+  const routeConfig = { title: appName, appName, env, host };
+
+  // App Middleware Configs
+  app.use(bodyParser());
+  app.use(cors({ origin: corsUrls, credentials: true }));
+  app.use(serve(path.join(__dirname, '../../public')));
+  app.use(views(path.join(__dirname, '../../views'), { extension: 'pug' }));
+  if (env === 'production') app.use(logger());
+
+  // Authentication Configs
+  app.use(passport.initialize());
+  await authStrategies();
+  // app.use(authenticate.optional); // This doesn't seem to work.
 
   // Create the Router
   const router = new Router();
@@ -57,22 +73,19 @@ export default async function(app: Koa, server: Server) {
     .use(router.routes())
     .use(router.allowedMethods());
 
-  // Settings
-  app.use(views(path.join(__dirname, '../views'), { extension: 'pug' }));
-  app.use(serve(path.join(__dirname, '../../public')));
-
-  // Middleware Configs
-  app.use(bodyParser());
-  app.use(cors({ origin: corsUrls, credentials: true }));
-  if (env === 'production') app.use(logger());
-
-  app.use(passport.initialize());
-  await authStrategies();
-  app.use(authenticate.optional);
+  // Router Middleware Configs
+  // router.use(bodyParser());
+  // router.use(cors({ origin: corsUrls, credentials: true }));
+  router.use(views(path.join(__dirname, '../../views'), { extension: 'pug' }));
+  router.use(authenticate.optional);
+  router.use(injectConfig('config', routeConfig));
 
   // // Routes
-  await graphQLRoutes(app, server);
+  await commonRoutes(app, router, server);
+  await graphQLRoutes(app, router, server);
   if (Configs.getConfig('mongodb')) await authRoutes(app, router, server);
+
+  app.use(renderInjected('404'));
 
   return;
 }

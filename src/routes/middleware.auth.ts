@@ -51,7 +51,7 @@ export function clearUserToken(ctx: ParameterizedContext, next: Next) {
  * @param next Next function callback.
  */
 async function authenticateJwtRequired(ctx: ParameterizedContext, next: Next) {
-  return passport.authenticate(['jwt'], { session: false }, (err, user) => {
+  return ctx.state.user ? next() : passport.authenticate(['jwt'], { session: false }, (err, user) => {
     ctx.state.user = user;
     return user ? next() : ctx.throw(401, 'Could not authenticate JWT');
   })(ctx, next);
@@ -63,7 +63,7 @@ async function authenticateJwtRequired(ctx: ParameterizedContext, next: Next) {
  * @param next Next function callback.
  */
 async function authenticateJwtOptional(ctx: ParameterizedContext, next: Next) {
-  return passport.authenticate(['jwt'], { session: false }, (err, user) => {
+  return ctx.state.user ? next() : passport.authenticate(['jwt'], { session: false }, (err, user) => {
     ctx.state.user = user;
     return next();
   })(ctx, next);

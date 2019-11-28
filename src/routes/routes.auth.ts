@@ -1,20 +1,20 @@
 /*
- * routes.graphql.ts
- * GraphQL Routes
+ * routes.auth.ts
+ * Authorization Routes
  */
 
 /**
  * Module Dependencies
  */
 
-import path from 'path';
 import Koa, { Context, Next } from 'koa';
 import Router from 'koa-router';
 import passport from 'passport';
 
 import Configs from '../configs';
 import Server from '../Server';
-import * as models from '../models';
+import { User, UserIdentity } from '../models';
+import { injectConfig, injectMessage, renderInjected } from './middleware.common';
 import { authenticate, clearUserToken, generateUserToken } from './middleware.auth';
 
 /**
@@ -34,8 +34,65 @@ export default async function routes(app: Koa, router: Router, server: Server) {
   // "Session" Routes
   router
     .all('/auth/logout', clearUserToken)
-    .get('/auth/logout', (ctx) => ctx.body = ({ success: true, msg: 'Successfully logged out.' }))
+    .get('/auth/logout', injectMessage({ msg: 'Successfully logged out.', type: 'success' }), (ctx) => ctx.redirect('/'))
     .post('/auth/logout', (ctx) => ctx.body = ({ success: true, msg: 'Successfully logged out.' }));
+
+  // Account Recovery
+  router
+    .get('/recover/', renderInjected('recover'))
+    .post('/recover/', async (ctx) => {
+      try {
+        const request = await User.requestPasswordReset(ctx.request.body.email);
+        if (!request.success) throw new Error(request.msg);
+        return ctx.redirect('/login');
+      } catch (err) {
+        return ctx.throw(500, err.message);
+      }
+    })
+    .get('/recover/:token', (ctx) => renderInjected('recover', { token: ctx.params.token })(ctx))
+    .post('/recover/:token', async (ctx) => {
+      try {
+        const request = await User.setPasswordWithToken(ctx.params.token, ctx.request.body.password);
+        if (!request.success) throw new Error(request.msg);
+        return ctx.redirect('/login');
+      } catch (err) {
+        return ctx.throw(403, err.message);
+      }
+    });
+
+  // Account Verification
+  router.get('/validate/email/:token', async (ctx, next) => {
+    try {
+      const request = await UserIdentity.validateWithToken(ctx.params.token);
+      if (!request.success) throw new Error(request.msg);
+      return ctx.redirect('/profile');
+    } catch (err) {
+      ctx.throw(500, err.message);
+    }
+  });
+
+  // Email / Password Login Routes
+  router.post(
+    '/auth/login',
+    passport.authenticate(['local'], { session: false, failureRedirect: '/login' }),
+    (ctx) => ctx.redirect('/profile'),
+  );
+
+  router.post(
+    '/auth/register',
+    async (ctx, next) => {
+      try {
+        const request = await User.authenticateEmail(ctx.request.body.email, ctx.request.body.password, true);
+        if (request.err) throw new Error(request.err.message);
+        ctx.state.user = request.user;
+        return next();
+      } catch (err) {
+        ctx.throw(403, err);
+      }
+    },
+    generateUserToken,
+    ctx => ctx.redirect('/profile'),
+  );
 
   // Social Login Routes
 
@@ -57,7 +114,8 @@ export default async function routes(app: Koa, router: Router, server: Server) {
           failureRedirect: '/login',
         }),
         generateUserToken,
-        (ctx) => ctx.body = ({ success: true, msg: 'Successfully logged in via Facebook'}),
+        injectMessage({ msg: 'Successfully logged in.', type: 'success' }),
+        (ctx) => ctx.redirect('/'),
       );
   }
 
@@ -79,22 +137,10 @@ export default async function routes(app: Koa, router: Router, server: Server) {
           failureRedirect: '/login',
         }),
         generateUserToken,
-        (ctx) => ctx.body = ({ success: true, msg: 'Successfully logged in via Google' }),
+        injectMessage({ msg: 'Successfully logged in.', type: 'success' }),
+        (ctx) => ctx.redirect('/'),
       );
   }
 
-  // Token Validation Routes
-
-  // Confirm Email with Token
-  router.get('/validate/email/:token', async (ctx, next) => {
-    const { token } = ctx.params;
-    try {
-      const redeem = await models.UserIdentity.validateWithToken(token);
-      if (!redeem.success) throw new Error(redeem.msg);
-      ctx.body = redeem;
-    } catch (err) {
-      ctx.body = err.message;
-    }
-  });
-
+  return;
 }

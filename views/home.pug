@@ -1,0 +1,21 @@
+extends layouts/layout-nav
+include includes/mixins
+
+append head
+
+append navbar
+
+append content
+  .container
+    .row.mt-5
+    .row.mt-5
+    +messages(messages)
+    .row
+      .col-md-12
+        h4.lead.ml-4=header || 'Placeholder'
+    .row
+      .col-md-4.mb-4.border-right
+      .col-md-4.mb-4.border-right
+      .col-md-4.mb-4
+
+append footer

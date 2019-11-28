@@ -9,7 +9,7 @@
     "curly": [true, "ignore-same-line"],
     "quotemark": [true, "single", "avoid-escape", "avoid-template"],
     "no-console": {
-      "severity": "warning"
+      "severity": "none"
     },
     "max-line-length": [
       true, {

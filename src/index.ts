@@ -12,9 +12,9 @@ import Server from './Server';
 import * as models from './models';
 import * as services from './services';
 import * as utils from './utilities';
-// import * as routes from './routes';
+import * as routes from './routes';
 
-// const { default: _, ...middleware } = routes;
+const { default: _, ...middleware } = routes;
 
 async function init(useServer = true): Promise<object> {
   const server = useServer ? new Server() : undefined;
@@ -29,7 +29,7 @@ async function init(useServer = true): Promise<object> {
     models,
     services,
     utils,
-    // middleware,
+    middleware,
   };
 }
 
@@ -43,7 +43,7 @@ module.exports = {
   models,
   services,
   utils,
-  // middleware,
+  middleware,
   // constants,
   // modules,
 };

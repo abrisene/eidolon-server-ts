@@ -1,0 +1,42 @@
+mixin navbar(brand, navs, authNavs)
+  nav.navbar.navbar-expand-sm.navbar-light.bg-light
+    a.navbar-brand(href="/")=brand
+
+    button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbar-content' aria-controls='navbar-content' aria-expanded='false' aria-label='Toggle navigation')
+      span.navbar-toggler-icon
+
+    .collapse.navbar-collapse#navbar-content
+      ul.navbar-nav.mr-auto
+        if user
+          each nav in authNavs
+            li.nav-item
+              a.nav-link(href=nav.href)=nav.text
+        else
+          each nav in navs
+            li.nav-item
+              a.nav-link(href=nav.href)=nav.text
+      block navbar
+
+      if user
+        .dropdown
+          button.btn.btn-link.dropdown-toggle#btn-profile-menu(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')=user.emailPrimary
+          .dropdown-menu.dropdown-menu-right(aria-labelledby='btn-profile-menu')
+            a.dropdown-item(href='/profile') Profile
+            .dropdown-divider
+            a.dropdown-item(href='/auth/logout') Logout
+            //- form(method='post' action='/auth/logout')
+            //-   button.dropdown-item(type='submit' name='/auth/logout') Logout
+
+      else
+        a.mr-4(href="/login") Log In
+        a.btn.btn-outline-primary(href="/register") Sign Up
+
+mixin message(msg, mType)
+  .alert.alert-dismissible.fade.show(class=`alert-${mType}` role="alert")=msg
+    button.close(type="button" data-dismiss="alert" aria-label="Close")
+      span(aria-hidden="true") &times;
+
+mixin messages(messages)
+  if messages
+    each message in messages
+      +message(message.msg, message.type)
