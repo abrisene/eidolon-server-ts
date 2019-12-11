@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "[![GitHub version](https://badge.fury.io/gh/abrisene%2Feidolon-server-ts.svg)](https://badge.fury.io/gh/abrisene%2Feidolon-server-ts)",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "David Robinson <dr@monetise.io> (http://www.monetise.io)",
   "license": "MIT",
   "bugs": {

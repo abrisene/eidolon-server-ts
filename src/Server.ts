@@ -11,6 +11,7 @@ import { Server } from 'http';
 import EventEmitter from 'events';
 // import express from 'express';
 import Koa from 'koa';
+import Router from 'koa-router';
 import socketIO from 'socket.io';
 import chalk from 'chalk';
 import Configs from './configs';
@@ -43,6 +44,7 @@ async function asyncListen(app: Koa, port: number): Promise<Server> {
 
 export default class EidolonServer extends EventEmitter {
   protected _app: Koa;
+  protected _router: Router;
   protected _server?: Server;
   protected _io?: socketIO.Server;
   protected _status: string;
@@ -50,6 +52,7 @@ export default class EidolonServer extends EventEmitter {
   constructor() {
     super();
     this._app = new Koa();
+    this._router = new Router();
     this._server = undefined;
     this._io = undefined;
     this._status = 'inactive';
@@ -58,6 +61,10 @@ export default class EidolonServer extends EventEmitter {
 
   get app() {
     return this._app;
+  }
+
+  get router() {
+    return this._router;
   }
 
   get server() {
@@ -93,8 +100,8 @@ export default class EidolonServer extends EventEmitter {
    * Registers a new set of routes with the server.
    * @param routeFn An async function containing route handlers.
    */
-  public async registerRoute(routeFn: (app: Koa, server: EidolonServer) => void) {
-    await routeFn(this._app, this);
+  public async registerRoute(routeFn: (app: Koa, router: Router, server: EidolonServer) => void) {
+    await routeFn(this._app, this._router, this);
     return;
   }
 

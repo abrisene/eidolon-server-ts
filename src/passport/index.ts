@@ -37,14 +37,14 @@ export default async function auth() {
   // const linkedInStrategy = await authLinkedIn;
   // const pinterestStrategy = await authPinterest;
 
-  if (Configs.getConfig('google')?.clientID) {
+  if (Configs.getConfig('google').clientID !== undefined) {
     // const googleTokenStrategy = await authGoogleToken();
     const googleStrategy = await authGoogle();
     passport.use(googleStrategy);
     // passport.use(googleTokenStrategy);
   }
 
-  if (Configs.getConfig('facebook')?.clientID) {
+  if (Configs.getConfig('facebook').clientID !== undefined) {
     // const facebookTokenStrategy = await authFacebookToken();
     const facebookStrategy = await authFacebook();
     passport.use(facebookStrategy);

@@ -45,10 +45,15 @@ export interface IEidolonRouteFunction {
  * Module Exports
  */
 
-export * from './middleware.common';
-export * from './middleware.auth';
+import * as middlewareCommon from './middleware.common';
+import * as middlewareAuth from './middleware.auth';
 
-export default async function(app: Koa, server: Server) {
+export const middleware = {
+  ...middlewareCommon,
+  ...middlewareAuth,
+};
+
+export default async function(app: Koa, router: Router, server: Server) {
   const { appName, env } = Configs.getConfig('environment');
   const { corsUrls } = Configs.getConfig('server');
   const { host } = Configs.getConfig('uris');
@@ -65,10 +70,9 @@ export default async function(app: Koa, server: Server) {
   // Authentication Configs
   app.use(passport.initialize());
   await authStrategies();
-  // app.use(authenticate.optional); // This doesn't seem to work.
 
   // Create the Router
-  const router = new Router();
+  // const router = new Router();
   app
     .use(router.routes())
     .use(router.allowedMethods());

@@ -12,11 +12,38 @@ import Server from './Server';
 import * as models from './models';
 import * as services from './services';
 import * as utils from './utilities';
-import * as routes from './routes';
+import { middleware } from './routes';
 
-const { default: _, ...middleware } = routes;
+/**
+ * Interfaces
+ */
 
-async function init(useServer = true): Promise<object> {
+export interface IBootstrapResponse {
+  Configs: typeof Configs;
+  init?: typeof init;
+  server?: Server;
+  models: typeof models;
+  services: typeof services;
+  utils: typeof utils;
+  middleware: typeof middleware;
+}
+
+/**
+ * Module Exports
+ */
+
+// export * from './configs';
+// export * from './server';
+// export * from './models';
+// export * from './services';
+// export * from './utilities';
+// export { middleware } from './routes';
+
+/**
+ * Bootstrapping Method
+ */
+
+export async function init(useServer = true): Promise<IBootstrapResponse> {
   const server = useServer ? new Server() : undefined;
   await Configs.init();
   const serverConfig = Configs.getConfig('server');
@@ -33,11 +60,7 @@ async function init(useServer = true): Promise<object> {
   };
 }
 
-/**
- * Module Exports
- */
-
-module.exports = {
+const mod: IBootstrapResponse = {
   Configs,
   init,
   models,
@@ -47,3 +70,5 @@ module.exports = {
   // constants,
   // modules,
 };
+
+export default mod;
