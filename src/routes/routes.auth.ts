@@ -97,7 +97,7 @@ export default async function routes(app: Koa, router: Router, server: Server) {
   // Social Login Routes
 
   // Facebook Authentication Routes
-  if (facebook?.clientID) {
+  if (facebook.clientID !== undefined) {
     router
       .get(
         '/auth/facebook',
@@ -120,7 +120,7 @@ export default async function routes(app: Koa, router: Router, server: Server) {
   }
 
   // Google Authentication Routes
-  if (google?.clientID) {
+  if (google.clientID !== undefined) {
     router
       .get(
         '/auth/google',
