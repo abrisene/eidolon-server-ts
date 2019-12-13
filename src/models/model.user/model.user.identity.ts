@@ -8,6 +8,7 @@
  */
 
 import mongoose, { Document, Model, Schema } from 'mongoose';
+import { IUser } from './model.user.schema';
 import { IToken } from '../model.authentication/model.token';
 import { IValidationResponse } from './methods.user.authentication';
 
@@ -16,7 +17,7 @@ import { IValidationResponse } from './methods.user.authentication';
  */
 
 export interface IUserIdentity extends Document {
-  owner: Document;
+  owner: IUser['_id'];
   emailPrimary: string;
   emails: string[];
   type: string;

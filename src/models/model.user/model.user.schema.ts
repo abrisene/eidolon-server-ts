@@ -9,12 +9,9 @@
 
 import mongoose, { Document, Model, Query, Schema } from 'mongoose';
 import { stitchMongooseSchema } from '../../utilities';
-import identityMethods from './methods.user.identity';
 import authenticationMethods, { ILoginResponse, ISocialProfile, IValidationResponse } from './methods.user.authentication';
 
 import { IUserIdentity } from './model.user.identity';
-import { IToken } from '../model.authentication/model.token';
-// import { ISocialProfile } from '../../passport/auth.social';
 
 /*
  * Interface
@@ -23,8 +20,8 @@ import { IToken } from '../model.authentication/model.token';
 export interface IUser extends Document {
   emailPrimary: string;
   emails: string[];
-  identityPrimary: Document;
-  identities: Document[];
+  identityPrimary: IUserIdentity['_id'];
+  identities: Array<IUserIdentity['_id']>;
   roles: string[];
   hash: string[];
   tsLogin: Date[];
@@ -94,7 +91,6 @@ schema.statics.findById = async function(id: string): Promise<IUser> {
  * Schema Stitching
  */
 
-stitchMongooseSchema(schema, identityMethods);
 stitchMongooseSchema(schema, authenticationMethods);
 
 /*

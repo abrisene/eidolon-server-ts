@@ -7,8 +7,8 @@ import { IUserIdentity } from './model.user.identity';
 export interface IUser extends Document {
     emailPrimary: string;
     emails: string[];
-    identityPrimary: Document;
-    identities: Document[];
+    identityPrimary: IUserIdentity['_id'];
+    identities: Array<IUserIdentity['_id']>;
     roles: string[];
     hash: string[];
     tsLogin: Date[];
