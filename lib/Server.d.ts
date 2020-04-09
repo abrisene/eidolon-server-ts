@@ -11,6 +11,11 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import socketIO from 'socket.io';
 import { IGraphQLConfig } from './graphql';
+/**
+ * Asynchronous wrapper from Express' app.listen()
+ * @param app  An express app to listen on.
+ * @param port The port that the express app should listen on.
+ */
 export default class EidolonServer extends EventEmitter {
     protected _app: Koa;
     protected _router: Router;

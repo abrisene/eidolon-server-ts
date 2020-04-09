@@ -30,13 +30,13 @@ import { importGraphQLConfig, importSchema, IGraphQLConfig } from './graphql';
  * @param app  An express app to listen on.
  * @param port The port that the express app should listen on.
  */
-async function asyncListen(app: Koa, port: number): Promise<Server> {
-  return new Promise((resolve, reject) => {
-    const server = app.listen(port, () => {
-      resolve(server);
-    });
-  });
-}
+// async function asyncListen(app: Koa, port: number): Promise<Server> {
+//   return new Promise((resolve, reject) => {
+//     const server = app.listen(port, () => {
+//       resolve(server);
+//     });
+//   });
+// }
 
 /*
  * Module Exports
@@ -123,7 +123,8 @@ export default class EidolonServer extends EventEmitter {
     await this.registerGraphQLSchema();
 
     // Start the Server
-    this._server = await asyncListen(this._app, port);
+    // this._server = await asyncListen(this._app, port);
+    this._server = await this._app.listen(port);
 
     // Configure Sockets
     this._io = socketIO(this._server);
