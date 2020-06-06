@@ -35,7 +35,7 @@
     "airtable": "0.8.0",
     "apollo-server": "2.9.12",
     "apollo-server-cache-redis": "1.1.4",
-    "apollo-server-koa": "2.9.12",
+    "apollo-server-koa": "2.14.2",
     "bcrypt-nodejs": "0.0.3",
     "chalk": "3.0.0",
     "dotenv": "8.2.0",
