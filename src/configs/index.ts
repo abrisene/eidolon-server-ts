@@ -8,7 +8,7 @@
  */
 
 import dotenv from 'dotenv';
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import fs from 'fs';
 import { asyncForEach, jsonTryParse } from '../utilities';
 import { getServerUrl } from './utilities.config';

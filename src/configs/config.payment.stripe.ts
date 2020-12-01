@@ -38,7 +38,7 @@ export default async function configure() {
   const { secretKey, publicKey } = envConfig;
 
   try {
-    const client = new Stripe(secretKey);
+    const client = new Stripe(secretKey, { apiVersion: '2020-08-27' });
     const config = { secretKey, publicKey, client };
     Configs.emit('stripe initialized');
     console.log(chalk.green.bold('>> Stripe Initialized <<'));

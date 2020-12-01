@@ -27,20 +27,20 @@ export default async function routes(app: Koa, router: Router, server: Server) {
   const google = Configs.getConfig('google');
 
   // Auth Testroutes
-  router.get('/auth/secret', authenticate.required, (ctx) => ctx.body = ctx.state.user);
-  router.get('/auth/optional', authenticate.optional, (ctx) => ctx.body = ctx.state.user);
-  router.get('/auth/user', (ctx) => ctx.body = ctx.state.user);
+  router.get('/auth/secret', authenticate.required, (ctx: Koa.Context) => ctx.body = ctx.state.user);
+  router.get('/auth/optional', authenticate.optional, (ctx: Koa.Context) => ctx.body = ctx.state.user);
+  router.get('/auth/user', (ctx: Koa.Context) => ctx.body = ctx.state.user);
 
   // "Session" Routes
   router
     .all('/auth/logout', clearUserToken)
-    .get('/auth/logout', injectMessage({ msg: 'Successfully logged out.', type: 'success' }), (ctx) => ctx.redirect('/'))
-    .post('/auth/logout', (ctx) => ctx.body = ({ success: true, msg: 'Successfully logged out.' }));
+    .get('/auth/logout', injectMessage({ msg: 'Successfully logged out.', type: 'success' }), (ctx: Koa.Context) => ctx.redirect('/'))
+    .post('/auth/logout', (ctx: Koa.Context) => ctx.body = ({ success: true, msg: 'Successfully logged out.' }));
 
   // Account Recovery
   router
     .get('/recover/', renderInjected('recover'))
-    .post('/recover/', async (ctx) => {
+    .post('/recover/', async (ctx: Koa.Context) => {
       try {
         const request = await User.requestPasswordReset(ctx.request.body.email);
         if (!request.success) throw new Error(request.msg);
@@ -49,8 +49,8 @@ export default async function routes(app: Koa, router: Router, server: Server) {
         return ctx.throw(500, err.message);
       }
     })
-    .get('/recover/:token', (ctx) => renderInjected('recover', { token: ctx.params.token })(ctx))
-    .post('/recover/:token', async (ctx) => {
+    .get('/recover/:token', (ctx: Koa.Context) => renderInjected('recover', { token: ctx.params.token })(ctx))
+    .post('/recover/:token', async (ctx: Koa.Context) => {
       try {
         const request = await User.setPasswordWithToken(ctx.params.token, ctx.request.body.password);
         if (!request.success) throw new Error(request.msg);
@@ -61,7 +61,7 @@ export default async function routes(app: Koa, router: Router, server: Server) {
     });
 
   // Account Verification
-  router.get('/validate/email/:token', async (ctx, next) => {
+  router.get('/validate/email/:token', async (ctx: Koa.Context, next: Koa.Next) => {
     try {
       const request = await UserIdentity.validateWithToken(ctx.params.token);
       if (!request.success) throw new Error(request.msg);
@@ -75,12 +75,12 @@ export default async function routes(app: Koa, router: Router, server: Server) {
   router.post(
     '/auth/login',
     passport.authenticate(['local'], { session: false, failureRedirect: '/login' }),
-    (ctx) => ctx.redirect('/profile'),
+    (ctx: Koa.Context) => ctx.redirect('/profile'),
   );
 
   router.post(
     '/auth/register',
-    async (ctx, next) => {
+    async (ctx: Koa.Context, next: Koa.Next) => {
       try {
         const request = await User.authenticateEmail(ctx.request.body.email, ctx.request.body.password, true);
         if (request.err) throw new Error(request.err.message);
@@ -91,7 +91,7 @@ export default async function routes(app: Koa, router: Router, server: Server) {
       }
     },
     generateUserToken,
-    ctx => ctx.redirect('/profile'),
+    (ctx: Koa.Context) => ctx.redirect('/profile'),
   );
 
   // Social Login Routes
@@ -115,7 +115,7 @@ export default async function routes(app: Koa, router: Router, server: Server) {
         }),
         generateUserToken,
         injectMessage({ msg: 'Successfully logged in.', type: 'success' }),
-        (ctx) => ctx.redirect('/'),
+        (ctx: Koa.Context) => ctx.redirect('/'),
       );
   }
 
@@ -138,7 +138,7 @@ export default async function routes(app: Koa, router: Router, server: Server) {
         }),
         generateUserToken,
         injectMessage({ msg: 'Successfully logged in.', type: 'success' }),
-        (ctx) => ctx.redirect('/'),
+        (ctx: Koa.Context) => ctx.redirect('/'),
       );
   }
 

@@ -46,16 +46,19 @@ export default async function routes(app: Koa, router: Router, server: Server) {
   router.get(
     '/profile',
     authenticate.required,
-    async (ctx, next) => {
+    async (ctx: Koa.Context, next: Koa.Next) => {
       try {
-        const identities = await UserIdentity.find({ _id: { $in: ctx.state.user.identities } });
+        const identities = await UserIdentity.find({
+          _id: { $in: ctx.state.user.identities },
+        });
         ctx.state.config.identities = identities;
       } catch (err) {
         ctx.throw(400, err.message);
       }
       return next();
     },
-    renderInjected('profile', { header: 'Profile' }));
+    renderInjected('profile', { header: 'Profile' }),
+  );
 
   return;
 }

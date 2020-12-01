@@ -9,7 +9,7 @@
 
 import chalk from 'chalk';
 import dotenv from 'dotenv';
-import { v1 as neo4j } from 'neo4j-driver';
+import neo4j from 'neo4j-driver';
 
 import { exists, jsonTryParse } from '../utilities';
 import Configs from './index';

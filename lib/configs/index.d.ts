@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 interface IKeyStore {
     [propName: string]: string | number;
 }
