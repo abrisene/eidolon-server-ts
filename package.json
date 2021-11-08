@@ -33,7 +33,7 @@
     "@koa/router": "8.0.2",
     "ably": "1.1.22",
     "airtable": "0.8.0",
-    "apollo-server": "2.9.12",
+    "apollo-server": "2.25.3",
     "apollo-server-cache-redis": "1.1.4",
     "apollo-server-koa": "2.9.12",
     "bcrypt-nodejs": "0.0.3",
